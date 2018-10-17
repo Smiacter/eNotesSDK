@@ -1,0 +1,20 @@
+platform :ios, '10.0'
+use_frameworks!
+
+target 'eNotesSDKPre_Example' do
+  pod 'eNotesSDKPre', :path => '../'
+  
+  post_install do |installer|
+      installer.pods_project.targets.each do |target|
+          target.build_configurations.each do |config|
+              config.build_settings['ENABLE_BITCODE'] = 'NO'
+          end
+      end
+  end
+
+  target 'eNotesSDKPre_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end

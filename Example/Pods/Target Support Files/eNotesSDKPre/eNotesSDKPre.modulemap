@@ -1,0 +1,6 @@
+framework module eNotesSDKPre {
+  umbrella header "eNotesSDKPre-umbrella.h"
+
+  export *
+  module * { export * }
+}

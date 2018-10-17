@@ -1,0 +1,320 @@
+//
+//  CardReaderManager.swift
+//  eNotesSdk
+//
+//  Created by Smiacter on 2018/9/27.
+//  Copyright © 2018 eNotes. All rights reserved.
+//
+
+import UIKit
+import CoreBluetooth
+import ethers
+
+public class CardReaderManager: NSObject {
+    
+    public static let shared = CardReaderManager()
+    private override init() {
+        
+    }
+    
+    // Observer
+    private var observations = [ObjectIdentifier: Observation]()
+    // Bluetooth
+    private var _centralManager: CBCentralManager?
+    private var peripheral: CBPeripheral?
+    private var peripherals = [CBPeripheral]() {
+        didSet {
+            didDiscoverPeripherals()
+        }
+    }
+    // ABTReader
+    private let abtManager = ABTReaderManager()
+}
+
+// MARK: Observer
+
+extension CardReaderManager {
+    
+    struct Observation {
+        weak var observer: CardReaderObserver?
+    }
+    
+    public func addObserver(observer: CardReaderObserver) {
+        let id = ObjectIdentifier(observer)
+        observations[id] = Observation(observer: observer)
+    }
+    
+    public func removeObserver(observer: CardReaderObserver) {
+        let id = ObjectIdentifier(observer)
+        observations.removeValue(forKey: id)
+    }
+    
+    func didDiscoverPeripherals() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didDiscover(peripherals: peripherals)
+        }
+    }
+    
+    func didBluetoothConnected() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didBluetoothConnected()
+        }
+    }
+    
+    func didBluetoothDisconnect() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didBluetoothDisconnect()        }
+    }
+    
+    func didBluetoothUpdateState(state: CBManagerState) {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didBluetoothUpdateState(state: state)
+        }
+    }
+    
+    func didCardRead(card: Card?, error: CardReaderError?) {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didCardRead(card: card, error: error)
+        }
+    }
+    
+    func didCardPresent() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didCardPresent()
+        }
+    }
+    
+    func didCardAbsent() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didCardAbsent()
+        }
+    }
+}
+
+// MARK: Bluetooth
+
+extension CardReaderManager {
+    
+    func centralManager() -> CBCentralManager {
+        if _centralManager == nil {
+            _centralManager = CBCentralManager(delegate: self, queue: nil)
+        }
+
+        return _centralManager!
+    }
+    
+    func detectReader(with peripheral: CBPeripheral) {
+        abtManager.detectReader(with: peripheral)
+    }
+    
+    public func startBluetoothScan() {
+        // clear peripherals first
+        peripherals.removeAll()
+        
+        // if peripheral connected, we must disconnect it first, otherwise we can't get any scan result
+        if peripheral != nil {
+            disconnectBluetooth(peripheral: peripheral!)
+        } else {
+            centralManager().scanForPeripherals(withServices: nil, options: nil)
+        }
+    }
+    
+    public func stopBluetoothScan() {
+        centralManager().stopScan()
+    }
+    
+    public func connectBluetooth(peripheral: CBPeripheral) {
+        centralManager().connect(peripheral, options: nil)
+    }
+    
+    public func disconnectBluetooth(peripheral: CBPeripheral) {
+        centralManager().cancelPeripheralConnection(peripheral)
+    }
+}
+
+extension CardReaderManager: CBCentralManagerDelegate {
+    
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        didBluetoothUpdateState(state: central.state)
+    }
+    
+    public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        if let name = peripheral.name, name.hasPrefix("ACR"), peripherals.index(of: peripheral) == nil {
+            peripherals.append(peripheral)
+        }
+    }
+    
+    public  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
+        self.peripheral = peripheral
+        detectReader(with: peripheral)
+        didBluetoothConnected()
+    }
+    
+    public  func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
+        
+    }
+    
+    public  func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
+        if self.peripheral != nil {
+            self.peripheral = nil
+        }
+        didBluetoothDisconnect()
+        if error != nil {
+            
+        } else {
+            stopBluetoothScan()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
+                self.stopBluetoothScan()
+            }
+        }
+    }
+}
+
+// MARK: RawTransaction
+
+public typealias rawtxClosure = ((String) -> ())?
+extension CardReaderManager {
+    
+    public func getEthRawTransaction(sendAddress: String, toAddress: String, value: String, gasPrice: String, estimateGas: String, nonce: UInt, data: Data? = nil, closure: rawtxClosure) {
+        let transaction = Transaction()
+        transaction.toAddress = Address(string: toAddress)
+        transaction.gasPrice = BigNumber(hexString: gasPrice)
+        transaction.gasLimit = BigNumber(hexString: estimateGas)
+        transaction.nonce = nonce
+        if let data = data {
+            transaction.data = data
+            transaction.value = BigNumber(integer: 0)
+        } else {
+            if let balanceNum = BigNumber(hexString: value), let valueNum = balanceNum.sub(transaction.gasPrice.mul(transaction.gasLimit)) {
+                transaction.value = valueNum
+            }
+        }
+        
+        let serializeData = transaction.unsignedSerialize()
+        let secureData = SecureData.keccak256(serializeData)
+        guard let hash = Hash(data: secureData) else {
+            return
+        }
+        let hexHash = hash.hexString.subString(from: 2)
+        
+        abtManager.signPrivateKey(hashStr: hexHash)
+        abtManager.signPrivateKeyClosure = { privateKey in
+            let rStr = privateKey.subString(to: 64)
+            let sStr = privateKey.subString(from: 64)
+            guard let bigR = BTCBigNumber(hexString: rStr), let bigS = BTCBigNumber(hexString: sStr) else {
+                return
+            }
+            // MARK: be careful, use the unsafe pointer cast!!! check it!!!
+            let s = unsafeBitCast(bigS.bignum, to: UnsafeMutablePointer<BIGNUM>.self)
+            
+            let ctx = BN_CTX_new()
+            BN_CTX_start(ctx)
+            
+            let group = EC_GROUP_new_by_curve_name(714) // NID_secp256k1 -> 714 define in 'OpenSSL-Universal' -> 'obj_mac.h'
+            let order = BN_CTX_get(ctx)
+            let halfOrder = BN_CTX_get(ctx)
+            EC_GROUP_get_order(group, order, ctx)
+            BN_rshift1(halfOrder, order)
+            
+            if BN_cmp(s, halfOrder) > 0 {
+                BN_sub(s, order, s)
+            }
+            BN_CTX_end(ctx)
+            BN_CTX_free(ctx)
+            EC_GROUP_free(group)
+            
+            guard let rData = BTCBigNumber(bignum: bigR.bignum).unsignedBigEndian, let sData = BTCBigNumber(bignum: bigS.bignum).unsignedBigEndian else {
+                return
+            }
+            transaction.populateSignature(withR: rData, s: sData, address: Address(string: sendAddress))
+            let serialize = transaction.serialize()
+            let rawtx = BTCHexFromData(serialize).addHexPrefix()
+            
+            closure?(rawtx)
+        }
+    }
+    
+    public func getBtcRawTransaction(publicKey: Data, toAddress: String, utxos: [UtxoModel], network: Network, fee: BTCAmount, closure: rawtxClosure) {
+        
+        DispatchQueue.global().async {
+            var destinationAddress: BTCAddress?
+            if network == .mainnet {
+                destinationAddress = BTCPublicKeyAddress(string: toAddress)
+            } else if network == .testnet {
+                destinationAddress = BTCPublicKeyAddressTestnet(string: toAddress)
+            }
+            guard destinationAddress != nil else { return }
+            
+            var outputs: [BTCTransactionOutput] = []
+            for utxo in utxos {
+                let output = BTCTransactionOutput()
+                output.value = utxo.value
+                output.script = BTCScript(data: BTCDataFromHex(utxo.script))
+                output.index = utxo.index
+                output.confirmations = utxo.confirmations
+                
+                guard let bigHashData = BTCDataFromHex(utxo.txid) else { return }
+                var hashData = Data()
+                for (_, data) in bigHashData.enumerated().reversed() {
+                    hashData.append(data) // bigHashData.subdata(in: i-1 ..< i)
+                }
+                output.transactionHash = hashData
+                outputs.append(output)
+            }
+            
+            outputs = outputs.sorted(by: { (output1, output2) -> Bool in
+                return output1.value < output2.value
+            })
+            
+            let tx = BTCTransaction()
+            var spentCoins: BTCAmount = 0
+            for output in outputs {
+                let input = BTCTransactionInput()
+                input.previousHash = output.transactionHash
+                input.previousIndex = output.index
+                tx.addInput(input)
+                spentCoins += output.value
+            }
+            let paymentOutput = BTCTransactionOutput(value: spentCoins - fee, address: destinationAddress)
+            tx.addOutput(paymentOutput)
+            
+            for (i, output) in outputs.enumerated() {
+                guard let inputs = tx.inputs as? [BTCTransactionInput] else { return }
+                do {
+                    let input = inputs[i]
+                    let data1 = tx.data
+                    let hashType = BTCSignatureHashType.BTCSignatureHashTypeAll
+                    let hash = try tx.signatureHash(for: output.script, inputIndex: UInt32(i), hashType: hashType)
+                    let data2 = tx.data
+                    guard data1 == data2 else { return }
+                    guard let hexStr = BTCHexFromData(hash) else { return }
+                    
+                    self.abtManager.signPrivateKey(hashStr: hexStr)
+                    
+                    let sema = DispatchSemaphore(value: 0)
+                    
+                    self.abtManager.signPrivateKeyClosure = { privateKey in
+                        let signature = BitcoinHelper.generateSignature(privateKey, hashtype: hashType)
+                        guard let script = BTCScript() else { return }
+                        script.appendData(signature)
+                        script.appendData(publicKey)
+                        input.signatureScript = script
+                        sema.signal()
+                    }
+                    sema.wait()
+                } catch {
+                    
+                }
+            }
+            
+            closure?(tx.hex)
+        }
+    }
+}

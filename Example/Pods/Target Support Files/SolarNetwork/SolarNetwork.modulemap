@@ -1,0 +1,6 @@
+framework module SolarNetwork {
+  umbrella header "SolarNetwork-umbrella.h"
+
+  export *
+  module * { export * }
+}
