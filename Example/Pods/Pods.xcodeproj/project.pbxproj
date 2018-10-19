@@ -277,7 +277,6 @@
 		AFD9218721B834FF0019F8042E29CC8A /* crypto.h in Headers */ = {isa = PBXBuildFile; fileRef = 3D78D3EAB2F52CCD07BEE0A625C220B6 /* crypto.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B000E7397C5EE0BCEDF789CA1987B199 /* CompactMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89672D7493D06CA95BCD438B7A0529E7 /* CompactMap.swift */; };
 		B055C193F00D16E9F570202DD267D321 /* eNotesSDKPre-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = CA5A55DA43F763E4C0E191D32E4BD42F /* eNotesSDKPre-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B0FC9955993C4F60CC74B025A6EDEDF8 /* ApduHandleable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4299AADCAAAB1032B662CD06064C65A /* ApduHandleable.swift */; };
 		B10B1667C5DC66503DDF82ACCFC297F2 /* rc4.h in Headers */ = {isa = PBXBuildFile; fileRef = C0A1952F2AC78B01B3B6E5CF8F39497D /* rc4.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B13EDEA01A34D6C409155F48314E87B8 /* des.h in Headers */ = {isa = PBXBuildFile; fileRef = 871A1EAF37CA9E4A1F2D7AC87AA04564 /* des.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B489D8EAE80B56AC79B5711E59A9ADA8 /* InfuraTxReceipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92C7B8FA2A9ECBFDB657C7D04818A9C /* InfuraTxReceipt.swift */; };
@@ -887,7 +886,6 @@
 		F1AA2ABC0B8DA59CCC4306D52180E26C /* Pods-eNotesSDKPre_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-eNotesSDKPre_Example.debug.xcconfig"; sourceTree = "<group>"; };
 		F353505F86FAD6F24BEAF52BC2EDA518 /* BlockchainUtxosRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockchainUtxosRequest.swift; sourceTree = "<group>"; };
 		F3DCBABD60F95758D1581C6988FC837D /* ripemd.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ripemd.h; sourceTree = "<group>"; };
-		F4299AADCAAAB1032B662CD06064C65A /* ApduHandleable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ApduHandleable.swift; sourceTree = "<group>"; };
 		F486F65DB38FFDDCA91A6D012D45B5BE /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F492689BB47D20A0869702C051454348 /* safestack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = safestack.h; sourceTree = "<group>"; };
 		F5C0BD5DF880AE65F01D347565B0B5DD /* ABIv2TypeParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ABIv2TypeParser.swift; sourceTree = "<group>"; };
@@ -1420,7 +1418,6 @@
 			isa = PBXGroup;
 			children = (
 				A2759B1E1567428531CE985644CE277E /* ABTReaderManager.swift */,
-				F4299AADCAAAB1032B662CD06064C65A /* ApduHandleable.swift */,
 				E649D58834DE60C051D853C39BA4C741 /* CardReaderDefinition.swift */,
 				1870EB5F071A18E20BE2DA06F03879EF /* CardReaderManager.swift */,
 				57785716796C7040AD9858EDA497069C /* CardReaderObserver.swift */,
@@ -2539,7 +2536,6 @@
 				D3E626D2FE8D571694B41FA85D6D9D09 /* ABIv2ParameterTypes.swift in Sources */,
 				CE00F541CE9564BF280508369F25E862 /* ABIv2TypeParser.swift in Sources */,
 				D9520804DEE04D7BDE4F9FEA59333D0A /* ABTReaderManager.swift in Sources */,
-				B0FC9955993C4F60CC74B025A6EDEDF8 /* ApduHandleable.swift in Sources */,
 				803FBB53CC661BEDEF0878D2D76366BC /* ApiKeyConfig.swift in Sources */,
 				5EC60D0E6A708F39C232671CBE1D718A /* Array+Extension.swift in Sources */,
 				A323211500919D07444B0AB6CB9F6645 /* Asn1Decoder.swift in Sources */,

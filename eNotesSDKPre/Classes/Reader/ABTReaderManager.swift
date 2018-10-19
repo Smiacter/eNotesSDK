@@ -3,6 +3,25 @@
 //  Alamofire
 //
 //  Created by Smiacter on 2018/10/10.
+//  Copyright © 2018 eNotes. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 //
 
 import UIKit
@@ -43,7 +62,7 @@ extension ABTReaderManager {
 
 extension ABTReaderManager {
     
-    /// authenticate the reader
+    /// Authenticate the reader
     func authenticate() {
         let masterKey = Data(hex: MasterKey)
         reader.authenticate(withMasterKey: masterKey)
@@ -65,9 +84,9 @@ extension ABTReaderManager {
 
 extension ABTReaderManager {
     
-    /// send apdu command to card
+    /// Send apdu command to card
     ///
-    /// - parameters:
+    /// - Parameters:
     ///  - apdu: specified apdu command except 'signPrivateKey'
     func sendApdu(apdu: Apdu) {
         self.apdu = apdu
@@ -85,9 +104,9 @@ extension ABTReaderManager {
         reader.transmitApdu(apduData)
     }
     
-    /// get apdu data, for type verifyDevice, verifyBlockchain
+    /// Get apdu data, for type verifyDevice, verifyBlockchain
     ///
-    /// - parameters:
+    /// - Parameters:
     ///  - tag: TLV's T: tag
     ///  - apdu: type verifyDevice, verifyBlockchain
     func getApduData(tag: String, apdu: Apdu) -> Data? {
@@ -110,7 +129,7 @@ extension ABTReaderManager {
         return Tlv.decode(data: apdu)
     }
     
-    /// save public key for global use
+    /// Save public key for global use
     func savePublicKey(rawApdu: Data) {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagBlockChainPublicKey)
@@ -122,7 +141,7 @@ extension ABTReaderManager {
         sendApdu(apdu: .cardStatus)
     }
     
-    /// save card safe status for global use
+    /// Save card safe status for global use
     func saveCardStatus(rawApdu: Data) {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagTransactionSignatureCounter)
@@ -273,7 +292,7 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
                 self.cert.append(data)
                 if data.count < 253 {
                     verifyCertificate()
-                } else {
+                } else { // cert data max length is 253, if bigger than that we should get it several times
                     sendApdu(apdu: .certificate("\(certP1 + 1)"))
                 }
             }

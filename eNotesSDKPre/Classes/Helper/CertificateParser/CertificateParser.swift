@@ -5,8 +5,28 @@
 //  Created by Smiacter on 2018/10/8.
 //  Copyright © 2018 eNotes. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
 import UIKit
+
+/// Parse certificate to humanity model
 
 class CertificateParser: NSObject {
 
@@ -26,6 +46,7 @@ class CertificateParser: NSObject {
     private var blockchain = ""
     /// network, MainBtc:0 TestBtc:1 Ethereum:1 EthereumRopsten:3 EthereumRinkeby:4 EthereumKovan:42
     private var network: Int = -1
+    /// contract address of ERC20 token
     private var contract: String?
     private var publicKeyInformation = ""
     private var serialNumber = ""
@@ -57,10 +78,11 @@ class CertificateParser: NSObject {
             r = decoder!.r
             s = decoder!.s
         } catch  {
-            return nil //print("decoder init fail")
+            return nil
         }
     }
     
+    /// Convert to Card which contain all card info, it will be used anywhere
     func toCard() -> Card {
         var card = Card()
         card.tbsCertificateAndSig = tbsCertificateAndSig

@@ -5,9 +5,26 @@
 //  Created by Smiacter on 2018/9/27.
 //  Copyright © 2018 eNotes. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
 /// NFC device master key, used to authenticate the deivce
-//let MasterKey = "41 43 52 31 32 35 35 55 2D 4A 31 20 41 75 74 68"
 let MasterKey = "41435231323535552D4A312041757468"
 
 /// The data field of APDUs are encoded in SIMPLE-TLV which is defined in ISO/IEC 7816-4, Tag definition here
@@ -39,7 +56,7 @@ public enum CardReaderError {
     case verifyError
 }
 
-/// all apdu command
+/// All apdu command
 ///
 /// none: everything is ok, on error there
 /// aid: Application id in device which you can identify your application to send apdu

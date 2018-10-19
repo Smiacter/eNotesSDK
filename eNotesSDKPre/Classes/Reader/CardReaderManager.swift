@@ -5,6 +5,24 @@
 //  Created by Smiacter on 2018/9/27.
 //  Copyright © 2018 eNotes. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
+//
 
 import UIKit
 import CoreBluetooth
@@ -39,6 +57,7 @@ extension CardReaderManager {
         weak var observer: CardReaderObserver?
     }
     
+    /// Add observer to handle card reader process wherever you need to konw the Bluetooth status or card info
     public func addObserver(observer: CardReaderObserver) {
         let id = ObjectIdentifier(observer)
         observations[id] = Observation(observer: observer)
@@ -114,6 +133,7 @@ extension CardReaderManager {
         abtManager.detectReader(with: peripheral)
     }
     
+    /// Start Bluetooth scan, you can get result through 'didDiscoverPeripherals' in CardReaderObserver protocol
     public func startBluetoothScan() {
         // clear peripherals first
         peripherals.removeAll()
@@ -126,14 +146,18 @@ extension CardReaderManager {
         }
     }
     
+    /// Stop the Bluetooth scan, scan will always listening
     public func stopBluetoothScan() {
         centralManager().stopScan()
     }
     
+    /// Connect a NFC Bluetooth device peripheral
+    /// It will call 'didBluetoothConnected' if success
     public func connectBluetooth(peripheral: CBPeripheral) {
         centralManager().connect(peripheral, options: nil)
     }
     
+    /// Bluetooth disconnected with peripheral (the NFC Bluetooth device)
     public func disconnectBluetooth(peripheral: CBPeripheral) {
         centralManager().cancelPeripheralConnection(peripheral)
     }
@@ -182,6 +206,18 @@ extension CardReaderManager: CBCentralManagerDelegate {
 public typealias rawtxClosure = ((String) -> ())?
 extension CardReaderManager {
     
+    /// Get ethereum raw transaction before send raw transaction
+    ///
+    /// - Parameters:
+    ///  - sendAddress: send address
+    ///  - toAddress: receiver address
+    ///  - value: available ethereum balance
+    ///  - gasPrice: gas price
+    ///  - estimateGas: estimate gas
+    ///  - nonce: nonce
+    ///  - data: transfer data if send an ERC20 token
+    ///  - closure:
+    ///   - String: return the rawtx which will be used to send raw transaction
     public func getEthRawTransaction(sendAddress: String, toAddress: String, value: String, gasPrice: String, estimateGas: String, nonce: UInt, data: Data? = nil, closure: rawtxClosure) {
         let transaction = Transaction()
         transaction.toAddress = Address(string: toAddress)
@@ -241,6 +277,16 @@ extension CardReaderManager {
         }
     }
     
+    /// Get bitcoin raw transaction before send raw transaction
+    ///
+    /// - Parameters:
+    ///  - publicKey: blockchain public key, Card model include this
+    ///  - toAddress: receiver address
+    ///  - utxos: available utxos
+    ///  - network: mainet or testnet
+    ///  - fee: estimate transaction fee
+    ///  - closure:
+    ///   - String: return the rawtx which will be used to send raw transaction
     public func getBtcRawTransaction(publicKey: Data, toAddress: String, utxos: [UtxoModel], network: Network, fee: BTCAmount, closure: rawtxClosure) {
         
         DispatchQueue.global().async {
