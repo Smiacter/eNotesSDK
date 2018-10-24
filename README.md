@@ -39,7 +39,7 @@ The eNotesSDKPre is a Swift implementation of the verify and manage your eNotes 
 
 ## Communication
 
-- If you'd like to **ask a general question**, use [Stack Overflow](http://stackoverflow.com/questions/tagged/alamofire).
+- If you'd like to **ask a general question**, use [Stack Overflow](https://stackoverflow.com/questions/tagged/enotessdk).
 - If you **found a bug**, open an issue.
 - If you **have a feature request**, open an issue.
 - If you **want to contribute**, submit a pull request.
