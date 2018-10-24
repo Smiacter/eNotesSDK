@@ -70,7 +70,7 @@ extension eNotesNetworkManager {
         }
     }
     
-    func getTxReceipt(blockchain: Blockchain, network: Network, txid: String, closure: confirmedClosure) {
+    func getTxReceipt(blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
         
         let request = eNotesArrayPostRequest()
         request.path = "/get_transaction_receipt"

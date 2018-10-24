@@ -7,8 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C2A4CE0217DA53200F10CC6 /* DetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CDC217DA53200F10CC6 /* DetailTableViewController.swift */; };
+		3C2A4CE1217DA53200F10CC6 /* WithdrawTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CDD217DA53200F10CC6 /* WithdrawTableViewController.swift */; };
+		3C2A4CE2217DA53200F10CC6 /* BluetoothCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CDE217DA53200F10CC6 /* BluetoothCell.swift */; };
+		3C2A4CE3217DA53200F10CC6 /* BluetoothTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CDF217DA53200F10CC6 /* BluetoothTableViewController.swift */; };
+		3C2A4CFA217DAA5100F10CC6 /* SGQRCode.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 3C2A4CEB217DAA5100F10CC6 /* SGQRCode.bundle */; };
+		3C2A4CFB217DAA5100F10CC6 /* UIImage+SGImageSize.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CED217DAA5100F10CC6 /* UIImage+SGImageSize.m */; };
+		3C2A4CFC217DAA5100F10CC6 /* SGQRCodeHelperTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CEF217DAA5100F10CC6 /* SGQRCodeHelperTool.m */; };
+		3C2A4CFD217DAA5100F10CC6 /* SGQRCodeScanningView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CF0217DAA5100F10CC6 /* SGQRCodeScanningView.m */; };
+		3C2A4CFE217DAA5100F10CC6 /* SGQRCodeScanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CF1217DAA5100F10CC6 /* SGQRCodeScanManager.m */; };
+		3C2A4CFF217DAA5100F10CC6 /* SGQRCodeGenerateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CF2217DAA5100F10CC6 /* SGQRCodeGenerateManager.m */; };
+		3C2A4D00217DAA5100F10CC6 /* WBQRCodeScanningVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CF4217DAA5100F10CC6 /* WBQRCodeScanningVC.m */; };
+		3C2A4D01217DAA5100F10CC6 /* SGQRCodeAlbumManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4CF8217DAA5100F10CC6 /* SGQRCodeAlbumManager.m */; };
+		3C2A4D06217DAA6600F10CC6 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D03217DAA6600F10CC6 /* Formatter.swift */; };
+		3C2A4D07217DAA6600F10CC6 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D04217DAA6600F10CC6 /* UIViewController+Extension.swift */; };
+		3C2A4D08217DAA6600F10CC6 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D05217DAA6600F10CC6 /* Validation.swift */; };
+		3C2A4D0F217F24F000F10CC6 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D0E217F24F000F10CC6 /* Alert.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
-		607FACD81AFB9204008FA782 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD71AFB9204008FA782 /* ViewController.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
 		607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDE1AFB9204008FA782 /* LaunchScreen.xib */; };
@@ -31,10 +46,34 @@
 		29AF1589CBF6030A6D968084 /* Pods-eNotesSDKPre_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eNotesSDKPre_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-eNotesSDKPre_Example/Pods-eNotesSDKPre_Example.release.xcconfig"; sourceTree = "<group>"; };
 		3196BB3AC6D41230805D0087 /* Pods_eNotesSDKPre_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eNotesSDKPre_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		36F46D3FC919AD91BFD9A733 /* Pods-eNotesSDKPre_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-eNotesSDKPre_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-eNotesSDKPre_Tests/Pods-eNotesSDKPre_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		3C2A4CDC217DA53200F10CC6 /* DetailTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailTableViewController.swift; sourceTree = "<group>"; };
+		3C2A4CDD217DA53200F10CC6 /* WithdrawTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WithdrawTableViewController.swift; sourceTree = "<group>"; };
+		3C2A4CDE217DA53200F10CC6 /* BluetoothCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothCell.swift; sourceTree = "<group>"; };
+		3C2A4CDF217DA53200F10CC6 /* BluetoothTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BluetoothTableViewController.swift; sourceTree = "<group>"; };
+		3C2A4CE4217DA9DF00F10CC6 /* eNotesSDKPre_Example-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "eNotesSDKPre_Example-Bridging-Header.h"; sourceTree = "<group>"; };
+		3C2A4CE9217DAA5100F10CC6 /* WBQRCodeScanningVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WBQRCodeScanningVC.h; sourceTree = "<group>"; };
+		3C2A4CEA217DAA5100F10CC6 /* SGQRCode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCode.h; sourceTree = "<group>"; };
+		3C2A4CEB217DAA5100F10CC6 /* SGQRCode.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = SGQRCode.bundle; sourceTree = "<group>"; };
+		3C2A4CED217DAA5100F10CC6 /* UIImage+SGImageSize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+SGImageSize.m"; sourceTree = "<group>"; };
+		3C2A4CEE217DAA5100F10CC6 /* UIImage+SGImageSize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+SGImageSize.h"; sourceTree = "<group>"; };
+		3C2A4CEF217DAA5100F10CC6 /* SGQRCodeHelperTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGQRCodeHelperTool.m; sourceTree = "<group>"; };
+		3C2A4CF0217DAA5100F10CC6 /* SGQRCodeScanningView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGQRCodeScanningView.m; sourceTree = "<group>"; };
+		3C2A4CF1217DAA5100F10CC6 /* SGQRCodeScanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGQRCodeScanManager.m; sourceTree = "<group>"; };
+		3C2A4CF2217DAA5100F10CC6 /* SGQRCodeGenerateManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGQRCodeGenerateManager.m; sourceTree = "<group>"; };
+		3C2A4CF3217DAA5100F10CC6 /* SGQRCodeAlbumManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCodeAlbumManager.h; sourceTree = "<group>"; };
+		3C2A4CF4217DAA5100F10CC6 /* WBQRCodeScanningVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WBQRCodeScanningVC.m; sourceTree = "<group>"; };
+		3C2A4CF5217DAA5100F10CC6 /* SGQRCodeHelperTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCodeHelperTool.h; sourceTree = "<group>"; };
+		3C2A4CF6217DAA5100F10CC6 /* SGQRCodeScanningView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCodeScanningView.h; sourceTree = "<group>"; };
+		3C2A4CF7217DAA5100F10CC6 /* SGQRCodeScanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCodeScanManager.h; sourceTree = "<group>"; };
+		3C2A4CF8217DAA5100F10CC6 /* SGQRCodeAlbumManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SGQRCodeAlbumManager.m; sourceTree = "<group>"; };
+		3C2A4CF9217DAA5100F10CC6 /* SGQRCodeGenerateManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SGQRCodeGenerateManager.h; sourceTree = "<group>"; };
+		3C2A4D03217DAA6600F10CC6 /* Formatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
+		3C2A4D04217DAA6600F10CC6 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		3C2A4D05217DAA6600F10CC6 /* Validation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
+		3C2A4D0E217F24F000F10CC6 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* eNotesSDKPre_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eNotesSDKPre_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		607FACD71AFB9204008FA782 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		607FACDA1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		607FACDC1AFB9204008FA782 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		607FACDF1AFB9204008FA782 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -78,6 +117,48 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		3C2A4CE8217DAA5100F10CC6 /* QrcodeScan */ = {
+			isa = PBXGroup;
+			children = (
+				3C2A4CE9217DAA5100F10CC6 /* WBQRCodeScanningVC.h */,
+				3C2A4CEA217DAA5100F10CC6 /* SGQRCode.h */,
+				3C2A4CEB217DAA5100F10CC6 /* SGQRCode.bundle */,
+				3C2A4CEC217DAA5100F10CC6 /* Category */,
+				3C2A4CEF217DAA5100F10CC6 /* SGQRCodeHelperTool.m */,
+				3C2A4CF0217DAA5100F10CC6 /* SGQRCodeScanningView.m */,
+				3C2A4CF1217DAA5100F10CC6 /* SGQRCodeScanManager.m */,
+				3C2A4CF2217DAA5100F10CC6 /* SGQRCodeGenerateManager.m */,
+				3C2A4CF3217DAA5100F10CC6 /* SGQRCodeAlbumManager.h */,
+				3C2A4CF4217DAA5100F10CC6 /* WBQRCodeScanningVC.m */,
+				3C2A4CF5217DAA5100F10CC6 /* SGQRCodeHelperTool.h */,
+				3C2A4CF6217DAA5100F10CC6 /* SGQRCodeScanningView.h */,
+				3C2A4CF7217DAA5100F10CC6 /* SGQRCodeScanManager.h */,
+				3C2A4CF8217DAA5100F10CC6 /* SGQRCodeAlbumManager.m */,
+				3C2A4CF9217DAA5100F10CC6 /* SGQRCodeGenerateManager.h */,
+			);
+			path = QrcodeScan;
+			sourceTree = "<group>";
+		};
+		3C2A4CEC217DAA5100F10CC6 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				3C2A4CED217DAA5100F10CC6 /* UIImage+SGImageSize.m */,
+				3C2A4CEE217DAA5100F10CC6 /* UIImage+SGImageSize.h */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
+		3C2A4D02217DAA5700F10CC6 /* Helper */ = {
+			isa = PBXGroup;
+			children = (
+				3C2A4D03217DAA6600F10CC6 /* Formatter.swift */,
+				3C2A4D04217DAA6600F10CC6 /* UIViewController+Extension.swift */,
+				3C2A4D05217DAA6600F10CC6 /* Validation.swift */,
+				3C2A4D0E217F24F000F10CC6 /* Alert.swift */,
+			);
+			name = Helper;
+			sourceTree = "<group>";
+		};
 		41FA12D69179EC89321EEF59 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -114,10 +195,13 @@
 			isa = PBXGroup;
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
-				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				3C2A4CE8217DAA5100F10CC6 /* QrcodeScan */,
+				3C2A4D02217DAA5700F10CC6 /* Helper */,
+				3C2A4CDE217DA53200F10CC6 /* BluetoothCell.swift */,
+				3C2A4CDF217DA53200F10CC6 /* BluetoothTableViewController.swift */,
+				3C2A4CDC217DA53200F10CC6 /* DetailTableViewController.swift */,
+				3C2A4CDD217DA53200F10CC6 /* WithdrawTableViewController.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
-				607FACDC1AFB9204008FA782 /* Images.xcassets */,
-				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
 			);
 			name = "Example for eNotesSDKPre";
@@ -127,6 +211,9 @@
 		607FACD31AFB9204008FA782 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
+				607FACDC1AFB9204008FA782 /* Images.xcassets */,
+				3C2A4CE4217DA9DF00F10CC6 /* eNotesSDKPre_Example-Bridging-Header.h */,
 				607FACD41AFB9204008FA782 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -213,7 +300,7 @@
 					607FACCF1AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
 						DevelopmentTeam = L8AMU964A2;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1000;
 					};
 					607FACE41AFB9204008FA782 = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -250,6 +337,7 @@
 				607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */,
 				607FACE01AFB9204008FA782 /* LaunchScreen.xib in Resources */,
 				607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */,
+				3C2A4CFA217DAA5100F10CC6 /* SGQRCode.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -334,7 +422,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
+				3C2A4CE2217DA53200F10CC6 /* BluetoothCell.swift in Sources */,
+				3C2A4D06217DAA6600F10CC6 /* Formatter.swift in Sources */,
+				3C2A4CFE217DAA5100F10CC6 /* SGQRCodeScanManager.m in Sources */,
+				3C2A4CFF217DAA5100F10CC6 /* SGQRCodeGenerateManager.m in Sources */,
+				3C2A4D07217DAA6600F10CC6 /* UIViewController+Extension.swift in Sources */,
+				3C2A4CE3217DA53200F10CC6 /* BluetoothTableViewController.swift in Sources */,
+				3C2A4CFC217DAA5100F10CC6 /* SGQRCodeHelperTool.m in Sources */,
+				3C2A4CFB217DAA5100F10CC6 /* UIImage+SGImageSize.m in Sources */,
+				3C2A4D00217DAA5100F10CC6 /* WBQRCodeScanningVC.m in Sources */,
+				3C2A4CE0217DA53200F10CC6 /* DetailTableViewController.swift in Sources */,
+				3C2A4CFD217DAA5100F10CC6 /* SGQRCodeScanningView.m in Sources */,
+				3C2A4D01217DAA5100F10CC6 /* SGQRCodeAlbumManager.m in Sources */,
+				3C2A4CE1217DA53200F10CC6 /* WithdrawTableViewController.swift in Sources */,
+				3C2A4D08217DAA6600F10CC6 /* Validation.swift in Sources */,
+				3C2A4D0F217F24F000F10CC6 /* Alert.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -481,6 +583,7 @@
 			baseConfigurationReference = BE9E50FB1446A8BEB080BD33 /* Pods-eNotesSDKPre_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = L8AMU964A2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = eNotesSDKPre/Info.plist;
@@ -489,6 +592,8 @@
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "eNotesSDKPre/eNotesSDKPre_Example-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};
@@ -499,6 +604,7 @@
 			baseConfigurationReference = 29AF1589CBF6030A6D968084 /* Pods-eNotesSDKPre_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				DEVELOPMENT_TEAM = L8AMU964A2;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = eNotesSDKPre/Info.plist;
@@ -507,6 +613,7 @@
 				MODULE_NAME = ExampleApp;
 				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "eNotesSDKPre/eNotesSDKPre_Example-Bridging-Header.h";
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
 			};

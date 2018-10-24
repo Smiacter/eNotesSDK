@@ -35,5 +35,13 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 	</array>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>应用需要访问您的蓝牙，以便能读取NFC蓝牙设备</string>
+    <key>NSCameraUsageDescription</key>
+    <string>应用需要使用您的相机，以便能扫描二维码</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>应用需要访问您的相册，以便您能保存图片</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>应用需要访问您的相册，以便能访问二维码图片</string>
 </dict>
 </plist>

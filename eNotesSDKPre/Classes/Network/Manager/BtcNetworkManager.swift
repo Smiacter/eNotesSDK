@@ -38,11 +38,7 @@ class BtcNetworkManager: NSObject {
 extension BtcNetworkManager {
     
     func getBalance(apis: [ApiType] = BtcCommonApis, error: NSError? = nil, blockchain: Blockchain, network: Network, address: String, closure: balanceClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apis.count > 0 else {
-//            eNotesNetworkManager.shared.getBalance(blockchain: blockchain, network: network, address: address, closure: closure)
-            return
-        }
+        guard apis.count > 0 else { closure?("", error); return }
         
         let randomApi = apis.random()
         // remove current random, not repeat request a same api
@@ -87,11 +83,7 @@ extension BtcNetworkManager {
     }
     
     func getUtxos(apis: [ApiType] = BtcCommonApis, error: NSError? = nil, network: Network, address: String, closure: btcUtxosClosure) {
-        guard error == nil else { closure?([], error); return }
-        guard apis.count > 0 else {
-//            eNotesNetworkManager.shared.getUtxos(network: network, address: address, closure: closure)
-            return
-        }
+        guard apis.count > 0 else { closure?([], error); return }
         
         let randomApi = apis.random()
         let leftApis = apis.filter{ $0 != randomApi }
@@ -134,9 +126,12 @@ extension BtcNetworkManager {
         }
     }
     
-    func getTxFee(apiOrders: [ApiType] = DefaultBtcFeeApiOrder, error: NSError? = nil, network: Network, closure: btcTxFeeClosure) {
-        guard error == nil else { closure?(0, nil, error); return }
-        guard apiOrders.count > 0 else { return }
+    func getEstimateFee(network: Network, closure: btcTxFeeClosure) {
+        getTxFee(apiOrders: network == .mainnet ? DefaultBtcFeeApiOrder : DefaultBtcFeeTestApiOrder, network: network, closure: closure)
+    }
+    
+    private func getTxFee(apiOrders: [ApiType] = DefaultBtcFeeApiOrder, error: NSError? = nil, network: Network, closure: btcTxFeeClosure) {
+        guard apiOrders.count > 0 else { closure?(0, nil, error); return }
         
         let api = apiOrders[0]
         let leftApis = apiOrders.filter{ $0 != api }
@@ -181,11 +176,7 @@ extension BtcNetworkManager {
     }
     
     func sendTransaction(apiOrder: [ApiType] = BtcSendTxApis, error: NSError? = nil, network: Network, rawtx: String, closure: txIdClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apiOrder.count > 0 else {
-//            eNotesNetworkManager.shared.sendTransaction(blockchain: .bitcoin, network: network, rawtx: rawtx, closure: closure)
-            return
-        }
+        guard apiOrder.count > 0 else { closure?("", error); return }
         
         let api = apiOrder.random()
         let leftApis = apiOrder.filter{ $0 != api }
@@ -219,12 +210,8 @@ extension BtcNetworkManager {
         }
     }
     
-    func getTxReceipt(apis: [ApiType] = BtcSendTxApis, error: NSError? = nil, blockchain: Blockchain, network: Network, txid: String, closure: confirmedClosure) {
-        guard error == nil else { closure?(.none, error); return }
-        guard apis.count > 0 else {
-//            eNotesNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
-            return
-        }
+    func getTxReceipt(apis: [ApiType] = BtcSendTxApis, error: NSError? = nil, blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
+        guard apis.count > 0 else { closure?(.none, error); return }
         
         let api = apis.random()
         let leftApis = apis.filter{ $0 != api }

@@ -42,8 +42,7 @@ extension EthNetworkManager {
     ///  - network: blockchain network
     /// - return: string type gas price throungh gasPriceClosure
     func getGasPrice(apiOrder: [ApiType] = DefaultGasPriceApiOrder, error: NSError? = nil, network: Network, closure: ethGasPriceClosure) {
-        guard error == nil else { closure?("", nil, error); return }
-        guard apiOrder.count > 0 else { return }
+        guard apiOrder.count > 0 else { closure?("", nil, error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -88,8 +87,7 @@ extension EthNetworkManager {
     }
     
     func call(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, network: Network, toAddress: String, data: String?, closure: ethCallClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apiOrder.count > 0, let dataStr = data else { return }
+        guard apiOrder.count > 0, let dataStr = data else { closure?("", error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -125,8 +123,7 @@ extension EthNetworkManager {
     }
     
     func getNonce(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, network: Network, address: String, closure: ethNonceClosure) {
-        guard error == nil else { closure?(0, error); return }
-        guard apiOrder.count > 0 else { return }
+        guard apiOrder.count > 0 else { closure?(0, error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -161,8 +158,7 @@ extension EthNetworkManager {
     }
     
     func getEstimateGas(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, network: Network, from: String, to address: String, value: String, data: String? = nil, closure: ethEstimateGasClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apiOrder.count > 0 else { return }
+        guard apiOrder.count > 0 else { closure?("", error); return }
         
         let api = apiOrder[0], dataStr = data != nil ? "&data=\(data!)" : ""
         let leftApis = apiOrder.filter{ $0 != api }
@@ -198,8 +194,7 @@ extension EthNetworkManager {
     }
     
     func getBalance(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, blockchain: Blockchain, network: Network, address: String, closure: balanceClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apiOrder.count > 0 else { return }
+        guard apiOrder.count > 0 else { closure?("", error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -234,8 +229,7 @@ extension EthNetworkManager {
     }
     
     func sendTransaction(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, network: Network, rawtx: String, closure: txIdClosure) {
-        guard error == nil else { closure?("", error); return }
-        guard apiOrder.count > 0 else { return }
+        guard apiOrder.count > 0 else { closure?("", error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -271,9 +265,8 @@ extension EthNetworkManager {
         }
     }
     
-    func getTxReceipt(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, blockchain: Blockchain, network: Network, txid: String, closure: confirmedClosure) {
-        guard error == nil else { closure?(.none, error); return }
-        guard apiOrder.count > 0 else { return }
+    func getTxReceipt(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
+        guard apiOrder.count > 0 else { closure?(.none, error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }

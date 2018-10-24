@@ -45,7 +45,7 @@ public protocol CardReaderObserver: class {
     func didCardAbsent()
 }
 
-extension CardReaderObserver {
+public extension CardReaderObserver {
     
     func didDiscover(peripherals: [CBPeripheral]) {}
     func didBluetoothConnected() {}

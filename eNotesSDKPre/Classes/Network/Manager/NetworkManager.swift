@@ -30,7 +30,7 @@ import Alamofire
 /// Balance callabck, String: hex string balance, NSError?: network or decode error
 public typealias balanceClosure = ((String, NSError?) -> ())?
 /// Transaction Receipt callback, ConfirmStatus: receipt status, NSError?: network or decode error
-public typealias confirmedClosure = ((ConfirmStatus, NSError?) -> ())?
+public typealias txReceiptClosure = ((ConfirmStatus, NSError?) -> ())?
 /// TxId callback when send raw transaction success, String: txid, NSError?: network or decode error
 public typealias txIdClosure = ((String, NSError?) -> ())?
 /// unspend callback, [UtxoModel]: uxto array, NSError?: network or decode error
@@ -79,7 +79,7 @@ public class NetworkManager: NSObject {
 public extension NetworkManager {
     
     /// Config third api key, we provide default value, but you'd better provide yours
-    /// We user several rpc api to request, some api need api key, so you'd better config it
+    /// We use several rpc api to request, some api need api key, so you'd better config it
     ///
     /// - Parameters:
     ///  - config: api key config
@@ -133,7 +133,7 @@ public extension NetworkManager {
     ///  - closure: receipt result callback
     ///   - ConfirmStatus: confirmed or confirming, see ConfirmStatus
     ///   - NSError?: network or decode error if occurred
-    func getTransactionReceipt(blockchain: Blockchain, network: Network, txid: String, closure: confirmedClosure) {
+    func getTransactionReceipt(blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
         guard isReachable() else { return }
         switch blockchain {
         case .bitcoin:
@@ -169,7 +169,7 @@ public extension NetworkManager {
     ///   - BitcoinFees?: estimate fee full information including fastestFee, halfHourFee, hourFee
     ///   - NSError?: network or decode error if occurred
     func getEstimateFee(network: Network, closure: btcTxFeeClosure) {
-        BtcNetworkManager.shared.getTxFee(network: network, closure: closure)
+        BtcNetworkManager.shared.getEstimateFee(network: network, closure: closure)
     }
 }
 
