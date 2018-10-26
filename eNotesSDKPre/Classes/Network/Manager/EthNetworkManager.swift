@@ -53,10 +53,9 @@ extension EthNetworkManager {
                 if let model = response.decode(to: EtherchainGasPrice.self) {
                     closure?(model.toGasPrice(), model, response.error)
                 } else {
-                    self.getGasPrice(apiOrder: leftApis, error: error, network: network, closure: closure)
+                    self.getGasPrice(apiOrder: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
-            break
         case .infura:
             let request = InfuraGasPriceRequest()
             request.path = "/\(network.network(api: api))/eth_gasPrice?token=\(NetworkManager.shared.apiKeyConfig.infuraApiKeys.random())"
@@ -65,7 +64,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toGasPrice(), nil, response.error)
                 } else {
-                    self.getGasPrice(apiOrder: leftApis, error: error, network: network, closure: closure)
+                    self.getGasPrice(apiOrder: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
         case .etherscan:
@@ -76,7 +75,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toGasPrice(), nil, response.error)
                 } else {
-                    self.getGasPrice(apiOrder: leftApis, error: error, network: network, closure: closure)
+                    self.getGasPrice(apiOrder: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
         case .eNotes:
@@ -101,7 +100,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.result, response.error)
                 } else {
-                    self.call(apiOrder: leftApis, error: error, network: network, toAddress: toAddress, data: data, closure: closure)
+                    self.call(apiOrder: leftApis, error: error ?? response.error, network: network, toAddress: toAddress, data: data, closure: closure)
                 }
             }
         case .etherscan:
@@ -112,7 +111,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.result, response.error)
                 } else {
-                    self.call(apiOrder: leftApis, error: error, network: network, toAddress: toAddress, data: data, closure: closure)
+                    self.call(apiOrder: leftApis, error: error ?? response.error, network: network, toAddress: toAddress, data: data, closure: closure)
                 }
             }
         case .eNotes:
@@ -136,7 +135,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toNonce(), response.error)
                 } else {
-                    self.getNonce(apiOrder: leftApis, error: error, network: network, address: address, closure: closure)
+                    self.getNonce(apiOrder: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
                 }
             }
         case .etherscan:
@@ -147,7 +146,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toNonce(), response.error)
                 } else {
-                    self.getNonce(apiOrder: leftApis, error: error, network: network, address: address, closure: closure)
+                    self.getNonce(apiOrder: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
                 }
             }
         case .eNotes:
@@ -172,7 +171,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toEstimateGas(), response.error)
                 } else {
-                    self.getEstimateGas(apiOrder: leftApis, error: error, network: network, from: from, to: address, value: value, closure: closure)
+                    self.getEstimateGas(apiOrder: leftApis, error: error ?? response.error, network: network, from: from, to: address, value: value, closure: closure)
                 }
             }
         case .etherscan:
@@ -183,7 +182,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toEstimateGas(), response.error)
                 } else {
-                    self.getEstimateGas(apiOrder: leftApis, error: error, network: network, from: from, to: address, value: value, closure: closure)
+                    self.getEstimateGas(apiOrder: leftApis, error: error ?? response.error, network: network, from: from, to: address, value: value, closure: closure)
                 }
             }
         case .eNotes:
@@ -207,7 +206,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toBalance(), response.error)
                 } else {
-                    self.getBalance(apiOrder: leftApis, error: error, blockchain: blockchain, network: network, address: address, closure: closure)
+                    self.getBalance(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, address: address, closure: closure)
                 }
             }
         case .etherscan:
@@ -218,7 +217,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: EtherscanBalance.self) {
                     closure?(model.toBalance(), response.error)
                 } else {
-                    self.getBalance(apiOrder: leftApis, error: error, blockchain: blockchain, network: network, address: address, closure: closure)
+                    self.getBalance(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, address: address, closure: closure)
                 }
             }
         case .eNotes:
@@ -243,7 +242,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toTxId(), response.error)
                 } else {
-                    self.sendTransaction(apiOrder: leftApis, error: error, network: network, rawtx: rawtx, closure: closure)
+                    self.sendTransaction(apiOrder: leftApis, error: error ?? response.error, network: network, rawtx: rawtx, closure: closure)
                 }
             }
         case .etherscan:
@@ -255,7 +254,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraGasPrice.self) {
                     closure?(model.toTxId(), response.error)
                 } else {
-                    self.sendTransaction(apiOrder: leftApis, error: error, network: network, rawtx: rawtx, closure: closure)
+                    self.sendTransaction(apiOrder: leftApis, error: error ?? response.error, network: network, rawtx: rawtx, closure: closure)
                 }
             }
         case .eNotes:
@@ -279,7 +278,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraTxReceiptRaw.self) {
                     closure?(model.toConfirmStatus(), response.error)
                 } else {
-                    self.getTxReceipt(apiOrder: leftApis, error: error, blockchain: blockchain, network: network, txid: txid, closure: closure)
+                    self.getTxReceipt(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, txid: txid, closure: closure)
                 }
             }
         case .etherscan:
@@ -290,7 +289,7 @@ extension EthNetworkManager {
                 if let model = response.decode(to: InfuraTxReceiptRaw.self) {
                     closure?(model.toConfirmStatus(), response.error)
                 } else {
-                    self.getTxReceipt(apiOrder: leftApis, error: error, blockchain: blockchain, network: network, txid: txid, closure: closure)
+                    self.getTxReceipt(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, txid: txid, closure: closure)
                 }
             }
         case .eNotes:

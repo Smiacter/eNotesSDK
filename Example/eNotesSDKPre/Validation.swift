@@ -13,7 +13,7 @@ import ethers
 extension String {
     
     /// Confirm whether a card address is valid
-    func isValidAddress(blockchain: Blockchain, isToast: Bool = true) -> Bool {
+    func isValidAddress(blockchain: Blockchain) -> Bool {
         guard !self.isEmpty else {
             return false
         }

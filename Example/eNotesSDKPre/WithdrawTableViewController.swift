@@ -66,7 +66,11 @@ class WithdrawTableViewController: UITableViewController {
     
     func sendEthRawTransaction() {
         guard let card = card, let balance = balance, let gasPrice = gasPrice, let estimateGas = estimateGas, let nonce = nonce, let toAddress = toAddressTextfield.text, !toAddress.isEmpty else {
-            Alert.show(leftTxt: nil, msg: "Information is incomplete, please check", title: "Tip")
+            Alert.show(leftTxt: nil, msg: "Information is incomplete, please check", title: "TIP")
+            return
+        }
+        guard toAddress.isValidAddress(blockchain: .ethereum) else {
+            Alert.show(leftTxt: nil, msg: "Invalid to address", title: "TIP")
             return
         }
         CardReaderManager.shared.getEthRawTransaction(sendAddress: card.address, toAddress: toAddress, value: balance, gasPrice: gasPrice, estimateGas: estimateGas, nonce: nonce) { (rawtx) in
@@ -76,7 +80,11 @@ class WithdrawTableViewController: UITableViewController {
     
     func sendBtcRawTransaction() {
         guard let card = card, let publicKey = card.publicKeyData, let unspend = unspend, let fee = btcEstimateFee, let toAddress = toAddressTextfield.text, !toAddress.isEmpty else {
-            Alert.show(leftTxt: nil, msg: "Information is incomplete, please check", title: "Tip")
+            Alert.show(leftTxt: nil, msg: "Information is incomplete, please check", title: "TIP")
+            return
+        }
+        guard toAddress.isValidAddress(blockchain: .bitcoin) else {
+            Alert.show(leftTxt: nil, msg: "Invalid to address", title: "TIP")
             return
         }
         CardReaderManager.shared.getBtcRawTransaction(publicKey: publicKey, toAddress: toAddress, utxos: unspend, network: card.network, fee: fee) { (rawtx) in
@@ -110,6 +118,18 @@ class WithdrawTableViewController: UITableViewController {
         case .ethereum:
             sendEthRawTransaction()
         }
+    }
+    
+    @IBAction func addressDidEndEditing(_ sender: UITextField) {
+        guard let card = card, let address = sender.text, address.isValidAddress(blockchain: card.blockchain), card.blockchain == .ethereum else { return }
+        self.getEstimateGas()
+    }
+}
+
+extension WithdrawTableViewController {
+    
+    override func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        view.endEditing(true)
     }
 }
 
@@ -157,7 +177,7 @@ extension WithdrawTableViewController {
         NetworkManager.shared.sendRawTransaction(blockchain: card!.blockchain, network: card!.network, rawtx: rawtx) { [weak self] (txid, error) in
             guard error == nil else { return }
             guard let self = self else { return }
-            Alert.show(leftTxt: nil, msg: "send raw transaction success \ntxid: \(txid)", title: "Tip", confirmClosure: {
+            Alert.show(leftTxt: nil, msg: "send raw transaction success \n\ntxid: \(txid)", title: "TIP", confirmClosure: {
                 self.navigationController?.popViewController(animated: true)
             })
         }

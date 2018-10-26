@@ -40,43 +40,44 @@ extension BtcNetworkManager {
     func getBalance(apis: [ApiType] = BtcCommonApis, error: NSError? = nil, blockchain: Blockchain, network: Network, address: String, closure: balanceClosure) {
         guard apis.count > 0 else { closure?("", error); return }
         
-        let randomApi = apis.random()
-        // remove current random, not repeat request a same api
-        let leftApis = apis.filter{ $0 != randomApi }
-        switch randomApi {
+        let api = apis[0]
+        let leftApis = apis.filter{ $0 != api }
+        switch api {
         case .blockchain:
             let request = BlockchainBalanceRequest()
-            request.path = "\(network.network(api: randomApi))blockchain.info/rawaddr/\(address)?limit=0&filter=5"
+            request.path = "\(network.network(api: api))blockchain.info/rawaddr/\(address)?limit=0&filter=5"
             BlockchainNetwork.request(request) { (response) in
                 let error = response.error // decode will change response.error, so define a temp var here
                 if let model = response.decode(to: BlockchainBalance.self) {
                     closure?(model.toBalance(), response.error)
                 } else {
-                    self.getBalance(apis: leftApis, error: error, blockchain: blockchain, network: network, address: address, closure: closure)
+                    self.getBalance(apis: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, address: address, closure: closure)
                 }
             }
         case .blockcypher:
             let request = BlockcypherBalanceRequest()
-            request.path = "/\(network.network(api: randomApi))/addrs/\(address)/balance?token=\(BlockcypherApiKeys.random())"
+            request.path = "/\(network.network(api: api))/addrs/\(address)/balance?token=\(BlockcypherApiKeys.random())"
             BlockcypherNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockcypherBalance.self) {
                     closure?(model.toBalance(), response.error)
                 } else {
-                    self.getBalance(apis: leftApis, error: error, blockchain: blockchain, network: network, address: address, closure: closure)
+                    self.getBalance(apis: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, address: address, closure: closure)
                 }
             }
         case .blockexplorer:
             let request = BlockexplorerBalanceRequest()
-            request.path = "\(network.network(api: randomApi))blockexplorer.com/api/addr/\(address)"
+            request.path = "\(network.network(api: api))blockexplorer.com/api/addr/\(address)"
             BlockexplorerNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockexplorerBalance.self) {
                     closure?(model.toBalance(), response.error)
                 } else {
-                    self.getBalance(apis: leftApis, error: error, blockchain: blockchain, network: network, address: address, closure: closure)
+                    self.getBalance(apis: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, address: address, closure: closure)
                 }
             }
+        case .eNotes:
+            eNotesNetworkManager.shared.getBalance(blockchain: blockchain, network: network, address: address, closure: closure)
         default:
             break
         }
@@ -85,42 +86,44 @@ extension BtcNetworkManager {
     func getUtxos(apis: [ApiType] = BtcCommonApis, error: NSError? = nil, network: Network, address: String, closure: btcUtxosClosure) {
         guard apis.count > 0 else { closure?([], error); return }
         
-        let randomApi = apis.random()
-        let leftApis = apis.filter{ $0 != randomApi }
-        switch randomApi {
+        let api = apis[0]
+        let leftApis = apis.filter{ $0 != api }
+        switch api {
         case .blockchain:
             let request = BlockchainUtxosRequest()
-            request.path = "\(network.network(api: randomApi))blockchain.info/unspent?active=\(address)"
+            request.path = "\(network.network(api: api))blockchain.info/unspent?active=\(address)"
             BlockchainNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockchainUtxosRaw.self) {
                     closure?(model.toUtxos(), response.error)
                 } else {
-                    self.getUtxos(apis: leftApis, error: error, network: network, address: address, closure: closure)
+                    self.getUtxos(apis: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
                 }
             }
         case .blockcypher:
             let request = BlockcypherUtxosRequest()
-            request.path = "/\(network.network(api: randomApi))/addrs/\(address)?token=\(BlockcypherApiKeys.random())&unspentOnly=true&includeScript=true"
+            request.path = "/\(network.network(api: api))/addrs/\(address)?token=\(BlockcypherApiKeys.random())&unspentOnly=true&includeScript=true"
             BlockcypherNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockcypherUtxosRaw.self) {
                     closure?(model.toUtxos(), response.error)
                 } else {
-                    self.getUtxos(apis: leftApis, error: error, network: network, address: address, closure: closure)
+                    self.getUtxos(apis: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
                 }
             }
         case .blockexplorer:
             let request = BlockexplorerUtxosRequest()
-            request.path = "\(network.network(api: randomApi))blockexplorer.com/api/addr/\(address)/utxo"
+            request.path = "\(network.network(api: api))blockexplorer.com/api/addr/\(address)/utxo"
             BlockexplorerNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: [BlockexplorerUtxos].self) {
                     closure?(model.toUtxos(), response.error)
                 } else {
-                    self.getUtxos(apis: leftApis, error: error, network: network, address: address, closure: closure)
+                    self.getUtxos(apis: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
                 }
             }
+        case .eNotes:
+            eNotesNetworkManager.shared.getUtxos(network: network, address: address, closure: closure)
         default:
             break
         }
@@ -144,7 +147,7 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockcypherFee.self) {
                     closure?(model.toBtcTxFee(), model.toBitcoinFee(), response.error)
                 } else {
-                    self.getTxFee(apiOrders: leftApis, error: error, network: network, closure: closure)
+                    self.getTxFee(apiOrders: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
         case .bitcoinfees:
@@ -154,7 +157,7 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BitcoinFees.self) {
                     closure?(model.toBtcTxFee(), model, response.error)
                 } else {
-                    self.getTxFee(apiOrders: leftApis, error: error, network: network, closure: closure)
+                    self.getTxFee(apiOrders: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
         case .blockexplorer:
@@ -165,7 +168,7 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockexplorerFee.self) {
                     closure?(model.toBtcTxFee(), nil, response.error)
                 } else {
-                    self.getTxFee(apiOrders: leftApis, error: error, network: network, closure: closure)
+                    self.getTxFee(apiOrders: leftApis, error: error ?? response.error, network: network, closure: closure)
                 }
             }
         case .eNotes:
@@ -178,7 +181,7 @@ extension BtcNetworkManager {
     func sendTransaction(apiOrder: [ApiType] = BtcSendTxApis, error: NSError? = nil, network: Network, rawtx: String, closure: txIdClosure) {
         guard apiOrder.count > 0 else { closure?("", error); return }
         
-        let api = apiOrder.random()
+        let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
         switch api {
         case .blockcypher:
@@ -190,7 +193,7 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockcypherTxidRaw.self) {
                     closure?(model.toTxId(), response.error)
                 } else {
-                    self.sendTransaction(apiOrder: leftApis, error: error, network: network, rawtx: rawtx, closure: closure)
+                    self.sendTransaction(apiOrder: leftApis, error: error ?? response.error, network: network, rawtx: rawtx, closure: closure)
                 }
             }
         case .blockexplorer:
@@ -202,9 +205,11 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockexplorerTxid.self) {
                     closure?(model.toTxId(), response.error)
                 } else {
-                    self.sendTransaction(apiOrder: leftApis, error: error, network: network, rawtx: rawtx, closure: closure)
+                    self.sendTransaction(apiOrder: leftApis, error: error ?? response.error, network: network, rawtx: rawtx, closure: closure)
                 }
             }
+        case .eNotes:
+            eNotesNetworkManager.shared.sendTransaction(blockchain: .bitcoin, network: network, rawtx: rawtx, closure: closure)
         default:
             break
         }
@@ -213,7 +218,7 @@ extension BtcNetworkManager {
     func getTxReceipt(apis: [ApiType] = BtcSendTxApis, error: NSError? = nil, blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
         guard apis.count > 0 else { closure?(.none, error); return }
         
-        let api = apis.random()
+        let api = apis[0]
         let leftApis = apis.filter{ $0 != api }
         switch api {
         case .blockcypher:
@@ -224,7 +229,7 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockexplorerTxReceipt.self) {
                     closure?(model.toConfirmStatus(), response.error)
                 } else {
-                    self.getTxReceipt(apis: leftApis, error: error, blockchain: blockchain, network: network, txid: txid, closure: closure)
+                    self.getTxReceipt(apis: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, txid: txid, closure: closure)
                 }
             }
         case .blockexplorer:
@@ -235,9 +240,11 @@ extension BtcNetworkManager {
                 if let model = response.decode(to: BlockexplorerTxReceipt.self) {
                     closure?(model.toConfirmStatus(), response.error)
                 } else {
-                    self.getTxReceipt(apis: leftApis, error: error, blockchain: blockchain, network: network, txid: txid, closure: closure)
+                    self.getTxReceipt(apis: leftApis, error: error ?? response.error, blockchain: blockchain, network: network, txid: txid, closure: closure)
                 }
             }
+        case .eNotes:
+            eNotesNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
         default:
             break
         }

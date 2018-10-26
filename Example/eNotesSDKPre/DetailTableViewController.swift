@@ -59,10 +59,18 @@ class DetailTableViewController: UITableViewController {
 
     @IBAction func withdrawAction(_ sender: Any) {
         guard let balance = BigNumber(hexString: balanceLabel.text)?.integerValue, balance > 0 else {
-            Alert.show(leftTxt: nil, msg: "Balance is 0, can't send transaction", title: "Tip")
+            Alert.show(leftTxt: nil, msg: "Balance is 0, can't send transaction", title: "TIP")
             return
         }
         performSegue(withIdentifier: "WithdrawSegue", sender: card)
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard indexPath.row == 1 else { return }
+        let pasteBoard = UIPasteboard.general
+        pasteBoard.string = addressLabel.text
+        Alert.show(leftTxt: nil, msg: "The address has been copied to the clipboard\n\n Address: \(addressLabel.text!)", title: "TIP")
     }
 }
 

@@ -50,20 +50,20 @@ class BluetoothTableViewController: UITableViewController {
 }
 
 extension BluetoothTableViewController: CardReaderObserver {
-    func didDiscover(peripherals: [CBPeripheral]) {
-        self.peripherals = peripherals
-    }
-    
-    func didBluetoothConnected() {
-        print("Bluetooth connected, please present card on if you didn't have")
-    }
-    
-    func didBluetoothDisconnect() {
-        print("didBluetoothDisconnect")
-    }
     
     func didBluetoothUpdateState(state: CBManagerState) {
-        print("Bluetooth state: \(state)")
+        switch state {
+        case .poweredOff:
+            Alert.show(leftTxt: nil, msg: "Bluetooth is off, please open on it", title: "TIP")
+        case .poweredOn:
+            CardReaderManager.shared.startBluetoothScan()
+        default:
+            print("Bluetooth state: \(state)")
+        }
+    }
+    
+    func didDiscover(peripherals: [CBPeripheral]) {
+        self.peripherals = peripherals
     }
     
     func didCardRead(card: Card?, error: CardReaderError?) {
@@ -75,13 +75,5 @@ extension BluetoothTableViewController: CardReaderObserver {
         guard card != nil else { return }
         guard let curVC = UIViewController.current(), curVC.isKind(of: BluetoothTableViewController.self) else { return }
         performSegue(withIdentifier: "DetailSegue", sender: card!)
-    }
-    
-    func didCardPresent() {
-        print("didCardPresent")
-    }
-    
-    func didCardAbsent() {
-        print("didCardAbsent")
     }
 }
