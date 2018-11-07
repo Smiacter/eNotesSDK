@@ -46,4 +46,25 @@ class Alert: NSObject {
         
         curVC.present(alertController, animated: true) {  }
     }
+    
+    static func showTextfield(confirmClosure: ((String?) -> ())?) {
+        guard let curVC = UIViewController.current() else { return }
+        
+        let alertController = UIAlertController(title: "Enter IP Address", message: nil, preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let confirmAction = UIAlertAction(title: "OK", style: .default) { (confirm) in
+            guard let texts = alertController.textFields, texts.count == 1 else { return }
+            confirmClosure?(texts[0].text)
+        }
+        alertController.addAction(confirmAction)
+        
+        alertController.addTextField { (textfield) in
+            textfield.placeholder = "Please enter your IP address"
+        }
+        
+        curVC.present(alertController, animated: true) {  }
+    }
 }

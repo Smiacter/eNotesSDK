@@ -48,13 +48,13 @@ extension ABTReaderManager {
         manager.detectReader(with: peripheral)
     }
     
-    func signPrivateKey(hashStr: String) {
+    func signPrivateKey(hashStr: String, id: Int? = nil) {
         apdu = .signPrivateKey
         let tv = Tlv.generate(tag: Data(hex: TagTransactionHash), value: Data(hex: hashStr))
         let serialData = Tlv.encode(tv: tv)
         let apduStr = apdu.value + serialData.toHexString()
-        let apduData = Data(hex: apduStr)
-        reader.transmitApdu(apduData)
+        guard let id = id else { reader.transmitApdu(Data(hex: apduStr)); return }
+        transceiveApdu(apdu: apdu, value: apduStr, id: id)
     }
 }
 
@@ -138,7 +138,6 @@ extension ABTReaderManager {
             return
         }
         self.publicKey = publicKey
-        sendApdu(apdu: .cardStatus)
     }
     
     /// Save card safe status for global use
@@ -150,7 +149,6 @@ extension ABTReaderManager {
             return
         }
         self.status = status.toHexString()
-        sendApdu(apdu: .certificate("\(certP1)"))
     }
     
     func getCertificateData(rawApdu: Data) -> Data? {
@@ -160,7 +158,8 @@ extension ABTReaderManager {
         return cert
     }
     
-    func verifyCertificate() {
+    /// if id is not nil, means you use HTTP Server to simulate NFC Device
+    func verifyCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
         card = certParser.toCard()
@@ -178,7 +177,9 @@ extension ABTReaderManager {
                 CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
                 return
             }
-            sendApdu(apdu: .verifyDevice)
+            guard let id = id else { sendApdu(apdu: .verifyDevice); return }
+            guard let apdu = getApduData(tag: TagChallenge, apdu: .verifyDevice) else { return }
+            transceiveApdu(apdu: .verifyDevice, value: apdu.toHexString(), id: id)
         }
         
         let data = AbiParser.encodePublicKeyData(issuer: card.issuer.uppercased(), batch: card.manufactureBatch)
@@ -204,7 +205,6 @@ extension ABTReaderManager {
             CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
             return
         }
-        sendApdu(apdu: .verifyBlockchain)
     }
     
     func verifyBlockchain(rawApdu: Data) {
@@ -285,8 +285,10 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             sendApdu(apdu: .publicKey)
         case .publicKey:
             savePublicKey(rawApdu: apdu)
+            sendApdu(apdu: .cardStatus)
         case .cardStatus:
             saveCardStatus(rawApdu: apdu)
+            sendApdu(apdu: .certificate("\(certP1)"))
         case .certificate:
             if let data = getCertificateData(rawApdu: apdu) {
                 self.cert.append(data)
@@ -298,11 +300,62 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             }
         case .verifyDevice:
             verifyDevice(rawApdu: apdu)
+            sendApdu(apdu: .verifyBlockchain)
         case .verifyBlockchain:
             verifyBlockchain(rawApdu: apdu)
         case .signPrivateKey:
             signPrivateKey(rawApdu: apdu)
         case .none:break
+        }
+    }
+}
+
+// MARK: Use Http server to simulate real NFC Bluetooth device
+
+extension ABTReaderManager {
+    
+    func transceiveApdu(apdu: Apdu, value: String, id: Int) {
+        guard let parameter = ServerMethod.apduTransmit(apdu: value, id: id).parameter else { return }
+        let request = ServerTransmitApduRequest()
+        request.path = ServerMethod.apduTransmit(apdu: value, id: id).path
+        request.parameters = parameter
+        ServerNetwork.request(request) { [weak self] (response) in
+            guard let self = self else { return }
+            guard let model = response.decode(to: ServerApduResponseRaw.self) else { return }
+            self.handleApduResponse(apdu: apdu, id: id, result: model.data.result)
+        }
+    }
+    
+    func handleApduResponse(apdu: Apdu, id: Int, result: String) {
+        switch apdu {
+        case .aid:
+            cert = Data()
+            certP1 = 0
+            transceiveApdu(apdu: .publicKey, value: Apdu.publicKey.value, id: id)
+        case .publicKey:
+            savePublicKey(rawApdu: Data(hex: result))
+            transceiveApdu(apdu: .cardStatus, value: Apdu.cardStatus.value, id: id)
+        case .cardStatus:
+            saveCardStatus(rawApdu: Data(hex: result))
+            transceiveApdu(apdu: .certificate("\(certP1)"), value: Apdu.certificate("\(certP1)").value, id: id)
+        case .certificate:
+            if let data = getCertificateData(rawApdu: Data(hex: result)) {
+                self.cert.append(data)
+                if data.count < 253 {
+                    verifyCertificate(id: id)
+                } else { // cert data max length is 253, if bigger than that we should get it several times
+                    transceiveApdu(apdu: .certificate("\(certP1 + 1)"), value: Apdu.certificate("\(certP1 + 1)").value, id: id)
+                }
+            }
+        case .verifyDevice:
+            verifyDevice(rawApdu: Data(hex: result))
+            guard let data = getApduData(tag: TagChallenge, apdu: .verifyBlockchain) else { break }
+            transceiveApdu(apdu: .verifyBlockchain, value: data.toHexString(), id: id)
+        case .verifyBlockchain:
+            verifyBlockchain(rawApdu: Data(hex: result))
+        case .signPrivateKey:
+            signPrivateKey(rawApdu: Data(hex: result))
+        case .none: break
         }
     }
 }

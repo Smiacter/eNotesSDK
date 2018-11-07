@@ -35,16 +35,22 @@ public class CardReaderManager: NSObject {
         
     }
     
+    // Switch - use http server to simulate card scan, connect, read process when not having NFC device
+    public var useServerSimulate = false
+    // if useServerSimulate is true, you must set server address, format: http://ip:port
+    public var serverIp = ""
     // Observer
     private var observations = [ObjectIdentifier: Observation]()
     // Bluetooth
     private var _centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
     private var peripherals = [CBPeripheral]() {
-        didSet {
-            didDiscoverPeripherals()
-        }
+        didSet { didDiscoverPeripherals() }
     }
+    private var devices = [ServerBluetoothDevice]() {
+        didSet { didDiscoverDevices() }
+    }
+    private var connectId = 0
     // ABTReader
     private let abtManager = ABTReaderManager()
 }
@@ -72,6 +78,13 @@ extension CardReaderManager {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
             observer.didDiscover(peripherals: peripherals)
+        }
+    }
+    
+    func didDiscoverDevices() {
+        for (id, observation) in observations {
+            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
+            observer.didDiscover(devices: devices)
         }
     }
     
@@ -135,6 +148,8 @@ extension CardReaderManager {
     
     /// Start Bluetooth scan, you can get result through 'didDiscoverPeripherals' in CardReaderObserver protocol
     public func startBluetoothScan() {
+        guard !useServerSimulate else { getBluetoothDeviceList(); return }
+        
         // clear peripherals first
         peripherals.removeAll()
         
@@ -155,6 +170,10 @@ extension CardReaderManager {
     /// It will call 'didBluetoothConnected' if success
     public func connectBluetooth(peripheral: CBPeripheral) {
         centralManager().connect(peripheral, options: nil)
+    }
+    
+    public func connectBluetooth(address: String) {
+        connectBluetoothDevice(address: address)
     }
     
     /// Bluetooth disconnected with peripheral (the NFC Bluetooth device)
@@ -240,7 +259,7 @@ extension CardReaderManager {
         }
         let hexHash = hash.hexString.subString(from: 2)
         
-        abtManager.signPrivateKey(hashStr: hexHash)
+        abtManager.signPrivateKey(hashStr: hexHash, id: connectId)
         abtManager.signPrivateKeyClosure = { privateKey in
             let rStr = privateKey.subString(to: 64)
             let sStr = privateKey.subString(from: 64)
@@ -342,7 +361,7 @@ extension CardReaderManager {
                     guard data1 == data2 else { return }
                     guard let hexStr = BTCHexFromData(hash) else { return }
                     
-                    self.abtManager.signPrivateKey(hashStr: hexStr)
+                    self.abtManager.signPrivateKey(hashStr: hexStr, id: self.connectId)
                     
                     let sema = DispatchSemaphore(value: 0)
                     
@@ -361,6 +380,32 @@ extension CardReaderManager {
             }
             
             closure?(tx.hex)
+        }
+    }
+}
+
+// MARK: Use Http server to simulate real NFC Bluetooth device
+
+extension CardReaderManager {
+    
+    func getBluetoothDeviceList() {
+        let request = ServerBluetoothListRequest()
+        request.path = ServerMethod.bleList.path
+        ServerNetwork.request(request) { [weak self ] (response) in
+            guard let self = self else { return }
+            guard let model = response.decode(to: ServerBluetoothDeviceRaw.self) else { return }
+            self.devices = model.data
+        }
+    }
+    
+    func connectBluetoothDevice(address: String) {
+        let request = ServerConnectBluetoothRequest()
+        request.path = ServerMethod.bleConnect(address: address).path
+        ServerNetwork.request(request) { [weak self ] (response) in
+            guard let self = self else { return }
+            guard let model = response.decode(to: ServerConnectResultRaw.self) else { return }
+            self.connectId = model.data.id
+            self.abtManager.transceiveApdu(apdu: .aid, value: Apdu.aid.value, id: model.data.id)
         }
     }
 }

@@ -13,6 +13,7 @@ import ethers
 
 class DetailTableViewController: UITableViewController {
     @IBOutlet weak var typeLabel: UILabel!
+    @IBOutlet weak var networkLabel: UILabel!
     @IBOutlet weak var addressLabel: UILabel!
     @IBOutlet weak var balanceLabel: UILabel!
     @IBOutlet weak var facevalueLabel: UILabel!
@@ -33,6 +34,7 @@ class DetailTableViewController: UITableViewController {
     func configure() {
         guard let card = card else { return }
         typeLabel.text = card.blockchain == .bitcoin ? "Bitcoin" : "Ethereum"
+        networkLabel.text = card.network.toString()
         addressLabel.text = card.address
         facevalueLabel.text = "\(card.deno)"
         safeStatusLabel.text = "\(card.isSafe ? "Safe" : "Dangerous")"

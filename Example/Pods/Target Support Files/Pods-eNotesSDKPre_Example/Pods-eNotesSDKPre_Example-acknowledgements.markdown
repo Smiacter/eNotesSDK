@@ -112,7 +112,7 @@ THE SOFTWARE.
 
 ## eNotesSDKPre
 
-Copyright (c) 2018 Smiacter <Smiacter@gmail.com>
+Copyright (c) 2018 eNotes <Smiacter@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -43,6 +43,10 @@ public protocol CardReaderObserver: class {
     func didCardPresent()
     /// Card did absent on NFC device
     func didCardAbsent()
+    
+    // --- for test ---
+    ///
+    func didDiscover(devices: [ServerBluetoothDevice])
 }
 
 public extension CardReaderObserver {
@@ -53,4 +57,8 @@ public extension CardReaderObserver {
     func didBluetoothUpdateState(state: CBManagerState) {}
     func didCardPresent() {}
     func didCardAbsent() {}
+    
+    // --- for test ---
+    ///
+    func didDiscover(devices: [ServerBluetoothDevice]) {} 
 }

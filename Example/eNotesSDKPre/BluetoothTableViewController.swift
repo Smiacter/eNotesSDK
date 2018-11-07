@@ -11,7 +11,12 @@ import eNotesSDKPre
 import CoreBluetooth
 
 class BluetoothTableViewController: UITableViewController {
-    var peripherals = [CBPeripheral]() {
+    @IBOutlet weak var testBarItem: UIBarButtonItem!
+    private var isTest = false
+    private var peripherals = [CBPeripheral]() {
+        didSet { tableView.reloadData() }
+    }
+    private var devices = [ServerBluetoothDevice]() {
         didSet { tableView.reloadData() }
     }
 
@@ -20,7 +25,22 @@ class BluetoothTableViewController: UITableViewController {
 
         CardReaderManager.shared.addObserver(observer: self)
     }
-
+    
+    @IBAction func testSwitchAction(_ sender: UIBarButtonItem) {
+        isTest = !isTest
+        if isTest {
+            Alert.showTextfield { [weak self] (ip) in
+                guard let self = self, let ip = ip else { return }
+                self.testBarItem.title = "CloseTest"
+                CardReaderManager.shared.useServerSimulate = true
+                CardReaderManager.shared.serverIp = ip
+            }
+        } else {
+            testBarItem.title = "OpenTest"
+            CardReaderManager.shared.useServerSimulate = false
+        }
+    }
+    
     @IBAction func scanBluetoothAction(_ sender: Any) {
         CardReaderManager.shared.startBluetoothScan()
     }
@@ -34,18 +54,26 @@ class BluetoothTableViewController: UITableViewController {
     // MARK: - Table view delegate
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return peripherals.count
+        return isTest ? devices.count : peripherals.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "BluetoothCell", for: indexPath) as? BluetoothCell else { fatalError("invalid cell type") }
-        cell.nameLabel.text = peripherals[indexPath.row].name
+        if isTest {
+            cell.nameLabel.text = devices[indexPath.row].name
+        } else {
+            cell.nameLabel.text = peripherals[indexPath.row].name
+        }
 
         return cell
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        CardReaderManager.shared.connectBluetooth(peripheral: peripherals[indexPath.row])
+        if isTest {
+            CardReaderManager.shared.connectBluetooth(address: devices[indexPath.row].address)
+        } else {
+            CardReaderManager.shared.connectBluetooth(peripheral: peripherals[indexPath.row])
+        }
     }
 }
 
@@ -64,6 +92,10 @@ extension BluetoothTableViewController: CardReaderObserver {
     
     func didDiscover(peripherals: [CBPeripheral]) {
         self.peripherals = peripherals
+    }
+    
+    func didDiscover(devices: [ServerBluetoothDevice]) {
+        self.devices = devices
     }
     
     func didCardRead(card: Card?, error: CardReaderError?) {
