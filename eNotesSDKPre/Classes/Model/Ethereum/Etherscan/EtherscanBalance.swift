@@ -1,8 +1,8 @@
 //
-//  BlockchainBalance.swift
+//  EtherscanBalance.swift
 //  eNotes
 //
-//  Created by Smiacter on 2018/8/20.
+//  Created by Smiacter on 2018/8/16.
 //  Copyright © 2018 eNotes. All rights reserved.
 //
 //  Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,11 +24,17 @@
 //  THE SOFTWARE.
 //
 
-struct BlockchainBalance: Decodable {
-    var hash160: String
-    var address: String
-    var n_tx: Int
-    var total_received: Int
-    var total_sent: Int
-    var final_balance: Int
+struct EtherscanBalance: Decodable {
+    var status: String
+    var message: String
+    var result: String
+}
+
+struct EtherscanMultBalanceRaw: Decodable {
+    var result: [EtherscanMultBalance]
+}
+
+struct EtherscanMultBalance: Decodable {
+    var account: String
+    var balance: String
 }

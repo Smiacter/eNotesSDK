@@ -68,4 +68,18 @@ final public class EnoteFormatter: NSObject {
         
         return BigNumber(number: smallestNum).decimalString
     }
+    
+    /// Packing string array to string seperate by giving character
+    public static func packingArrToString(arr: [String], seperator: String = ",") -> String {
+        var idStr = ""
+        for id in arr{
+            idStr = idStr + "\(id)\(seperator)"
+        }
+        if !idStr.isEmpty {
+            let str = idStr.subString(to: idStr.count-1)
+            idStr = str
+        }
+        
+        return idStr
+    }
 }

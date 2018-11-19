@@ -29,6 +29,7 @@ import Alamofire
 
 /// Balance callabck, String: hex string balance, NSError?: network or decode error
 public typealias balanceClosure = ((String, NSError?) -> ())?
+public typealias multBalanceClosure = (([String]?, NSError?) -> ())?
 /// Transaction Receipt callback, ConfirmStatus: receipt status, NSError?: network or decode error
 public typealias txReceiptClosure = ((ConfirmStatus, NSError?) -> ())?
 /// TxId callback when send raw transaction success, String: txid, NSError?: network or decode error
@@ -45,6 +46,10 @@ public typealias ethNonceClosure = ((UInt, NSError?) -> ())?
 public typealias ethEstimateGasClosure = ((String, NSError?) -> ())?
 /// call, String: call result, NSError?: network or decode error
 public typealias ethCallClosure = ((String, NSError?) -> ())?
+/// blockchain exchange rate, Double?: rate, NSError?: network or decode error
+public typealias exchangeRateClosure = ((ExchangeRate?, NSError?) -> ())?
+/// blockchain transaction history, list of transaction history, NSError?: network or decode error
+public typealias txsClosure = (([TransactionHistory]?, NSError?) -> ())?
 
 public class NetworkManager: NSObject {
     static public let shared = NetworkManager()
@@ -97,12 +102,19 @@ public extension NetworkManager {
     ///   - String: hex format balance
     ///   - NSError?: network or decode error if occurred
     func getBalance(blockchain: Blockchain, network: Network, address: String, closure: balanceClosure) {
-        guard isReachable() else { return }
         switch blockchain {
         case .bitcoin:
             BtcNetworkManager.shared.getBalance(blockchain: blockchain, network: network, address: address, closure: closure)
         case .ethereum:
             EthNetworkManager.shared.getBalance(blockchain: blockchain, network: network, address: address, closure: closure)
+        }
+    }
+    func getMultBalances(blockchain: Blockchain, network: Network, addresses: [String], closure: multBalanceClosure) {
+        switch blockchain {
+        case .bitcoin:
+            BtcNetworkManager.shared.getMultBalances(network: network, addresses: addresses, closure: closure)
+        case .ethereum:
+            EthNetworkManager.shared.getMultBalances(network: network, addresses: addresses, closure: closure)
         }
     }
     
@@ -134,12 +146,29 @@ public extension NetworkManager {
     ///   - ConfirmStatus: confirmed or confirming, see ConfirmStatus
     ///   - NSError?: network or decode error if occurred
     func getTransactionReceipt(blockchain: Blockchain, network: Network, txid: String, closure: txReceiptClosure) {
-        guard isReachable() else { return }
         switch blockchain {
         case .bitcoin:
             BtcNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
         case .ethereum:
             EthNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
+        }
+    }
+    
+    /// Get transaction history
+    ///
+    /// - Parameters:
+    ///  - blockchain: btc or eth, see Blockchain
+    ///  - network: mainnet, ethereum... see Network
+    ///  - address: specified address
+    ///  - closure: receipt result callback
+    ///   - [TransactionHistory]: confirmed or confirming, see ConfirmStatus
+    ///   - NSError?: network or decode error if occurred
+    func getTransactionHistory(blockchain: Blockchain, error: NSError? = nil, network: Network, address: String, contract: String?, closure: txsClosure) {
+        switch blockchain {
+        case .bitcoin:
+            BtcNetworkManager.shared.getTransactionHistory(network: network, address: address, closure: closure)
+        case .ethereum:
+            EthNetworkManager.shared.getTransactionHistory(network: network, address: address, contract: contract, closure: closure)
         }
     }
 }
@@ -227,5 +256,206 @@ public extension NetworkManager {
     ///   - NSError?: network or decode error if occurred
     func getEstimateGas(network: Network, from: String, to: String, value: String, data: String? = nil, closure: ethEstimateGasClosure) {
         EthNetworkManager.shared.getEstimateGas(network: network, from: from, to: to, value: value, data: data, closure: closure)
+    }
+}
+
+// MARK: Exchange Rate
+
+extension NetworkManager {
+    
+    public func getExchangeRate(blockchain: Blockchain, contract: String? = nil, closure: exchangeRateClosure) {
+        if contract != nil {
+            getExchangeRate(apiOrder: GusdRateApiOrder, blockchain: blockchain, contract: contract, closure: closure)
+        } else {
+            getExchangeRate(apiOrder: DefaultRateApiOrder, blockchain: blockchain, contract: contract, closure: closure)
+        }
+    }
+    
+    private func getExchangeRate(apiOrder: [RateApi] = DefaultRateApiOrder, error: NSError? = nil, blockchain: Blockchain, contract: String? = nil, closure: exchangeRateClosure) {
+        guard apiOrder.count > 0 else { closure?(nil, error); return }
+        
+        let api = apiOrder[0]
+        let leftApis = apiOrder.filter{ $0 != api }
+        switch api {
+        case .coinbase:
+            let request = CoinbaseRateRequest()
+            request.path = "\(blockchain.short)"
+            CoinbaseNetwork.request(request) { (response) in
+                let error = response.error
+                if let model = response.decode(to: CoinbaseRaw.self) {
+                    closure?(model.toExchangeRate(), nil)
+                } else {
+                    self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
+                }
+            }
+        case .okex:
+            getOkexRate(blockchain: blockchain, contract: contract) { (rate, error) in
+                guard error == nil else {
+                    self.getExchangeRate(apiOrder: leftApis, error: error, blockchain: blockchain, closure: closure)
+                    return
+                }
+
+                closure?(rate, nil)
+            }
+        case .bitz:
+            let request = BitzRateRequest()
+            request.path = "\(blockchain.short.lowercased())"
+            BitzNetwork.request(request) { (response) in
+                let error = response.error
+                if let model = response.decode(to: BitzRaw.self) {
+                    closure?(model.toExchangeRate(), nil)
+                } else {
+                    self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
+                }
+            }
+        case .cryptocompare:
+            let request = CryptoCompareRequest()
+            let type = contract != nil ? "GUSD" : "\(blockchain.short)"
+            request.path = "fsyms=\(type)&tsyms=USD,CNY,EUR,JPY,BTC,ETH,GUSD"
+            CryptoCompareNetwork.request(request) { (response) in
+                let error = response.error
+                if let model = response.decode(to: CryptoCompare.self) {
+                    closure?(model.toExchangeRate(), nil)
+                } else {
+                    self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
+                }
+            }
+        }
+    }
+    
+    private func getOkexRate(blockchain: Blockchain, contract: String?, closure: exchangeRateClosure) {
+        var gusd2btcRate: Double?
+        var eth2btcRate: Double?
+        var btc2usdRate: Double?
+        var curreny: Usd2OtherCurrency?
+        let group = DispatchGroup()
+
+        // get rate of gusd to btc and eth to btc
+        group.enter()
+        let toBtcRequest = OkexOther2BtcRequest()
+        toBtcRequest.path = "/spot/v3/instruments/ticker" // GUSD-BTC , ETH-BTC
+        OkexNetwork.request(toBtcRequest) { (response) in
+            group.leave()
+            if let model = response.decode(to: [OkexOther2Btc].self) {
+                let gusd2Btc = model.filter { $0.instrument_id == "GUSD-BTC" }
+                let eth2Btc = model.filter { $0.instrument_id == "ETH-BTC" }
+                if gusd2Btc.count == 1 {
+                    gusd2btcRate = Double(gusd2Btc[0].last)
+                }
+                if eth2Btc.count == 1 {
+                    eth2btcRate = Double(eth2Btc[0].last)
+                }
+            }
+        }
+        // get btc to usd rate
+        group.enter()
+        let toUsdRequest = OkexOther2UsdRequest()
+        toUsdRequest.path = "/v1/future_index.do?symbol=btc_usd"
+        OkexNetwork.request(toUsdRequest) { (response) in
+            group.leave()
+            if let model = response.decode(to: OkexOther2Usd.self) {
+                btc2usdRate = model.future_index
+            }
+        }
+        // get rate of usd to USD, CNY, EUR, JPY
+        group.enter()
+        getUsd2OtherCurrency { (usd2OtherCurrency) in
+            group.leave()
+            curreny = usd2OtherCurrency
+        }
+
+        group.notify(queue: .main) {
+            guard let gusd2btcRate = gusd2btcRate, let eth2btcRate = eth2btcRate,
+                let btc2usdRate = btc2usdRate, let curreny = curreny else {
+                let error = NSError(domain: "okex rate get failed", code: -10086, userInfo: nil)
+                closure?(nil, error)
+                return
+            }
+            /// gusd
+            guard contract == nil else {
+                let gusd: Double = 1
+                let btc = gusd2btcRate
+                let eth = gusd2btcRate / eth2btcRate
+                let usd = gusd2btcRate * btc2usdRate
+                let cny = usd * curreny.usd2cny
+                let eur = usd * curreny.usd2eur
+                let jpy = usd * curreny.usd2jpy
+                let exchangeRate = ExchangeRate(btc: btc,
+                                                eth: eth,
+                                                gusd: gusd,
+                                                usd: usd,
+                                                cny: cny,
+                                                eur: eur,
+                                                jpy: jpy)
+                closure?(exchangeRate, nil)
+                return
+            }
+            // btc or eth
+            switch blockchain {
+            case .bitcoin:
+                let btc: Double = 1
+                let eth = 1 / eth2btcRate
+                let gusd = 1 / gusd2btcRate
+                let usd = btc2usdRate
+                let cny = usd * curreny.usd2cny
+                let eur = usd * curreny.usd2eur
+                let jpy = usd * curreny.usd2jpy
+                let exchangeRate = ExchangeRate(btc: btc,
+                                                eth: eth,
+                                                gusd: gusd,
+                                                usd: usd,
+                                                cny: cny,
+                                                eur: eur,
+                                                jpy: jpy)
+                closure?(exchangeRate, nil)
+            case .ethereum:
+                let eth: Double = 1
+                let btc = eth2btcRate
+                let gusd = eth2btcRate / gusd2btcRate
+                let usd = eth2btcRate * btc2usdRate
+                let cny = usd * curreny.usd2cny
+                let eur = usd * curreny.usd2eur
+                let jpy = usd * curreny.usd2jpy
+                let exchangeRate = ExchangeRate(btc: btc,
+                                                eth: eth,
+                                                gusd: gusd,
+                                                usd: usd,
+                                                cny: cny,
+                                                eur: eur,
+                                                jpy: jpy)
+                closure?(exchangeRate, nil)
+            }
+        }
+    }
+    
+    private typealias usd2otherClosure = ((Usd2OtherCurrency?) -> ())?
+    private func getUsd2OtherCurrency(apiOrder: [RateApi] = Usd2OtherApiOrder, closure: usd2otherClosure) {
+        guard apiOrder.count > 0 else { return }
+        let api = apiOrder[0]
+        let leftApis = apiOrder.filter{ $0 != api }
+        switch api {
+        case .bitz:
+            let request = BitzRateRequest()
+            request.path = "eth"
+            BitzNetwork.request(request) { (response) in
+                if let model = response.decode(to: BitzRaw.self) {
+                    closure?(model.toUsd2Other())
+                } else {
+                    self.getUsd2OtherCurrency(apiOrder: leftApis, closure: closure)
+                }
+            }
+        case .cryptocompare:
+            let request = CryptoCompareRequest()
+            request.path = "fsyms=ETH&tsyms=USD,CNY,EUR,JPY"
+            CryptoCompareNetwork.request(request) { (response) in
+                if let model = response.decode(to: CryptoCompare.self) {
+                    closure?(model.toUsd2Other())
+                } else {
+                    self.getUsd2OtherCurrency(apiOrder: leftApis, closure: closure)
+                }
+            }
+        default:
+            break
+        }
     }
 }

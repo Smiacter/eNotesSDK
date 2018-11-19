@@ -227,6 +227,18 @@ extension EthNetworkManager {
         }
     }
     
+    /// get mult address balance
+    func getMultBalances(network: Network, addresses: [String], closure: multBalanceClosure) {
+        let addressStr = EnoteFormatter.packingArrToString(arr: addresses, seperator: ",")
+        let request = EtherscanBalanceRequest()
+        request.path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=balancemulti&address=\(addressStr)&tag=latest&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
+        EtherscanNetwork.request(request) { (response) in
+            guard response.error == nil else { closure?(nil, response.error); return }
+            guard let model = response.decode(to: EtherscanMultBalanceRaw.self) else { closure?(nil, response.error); return }
+            closure?(model.toMultBalance(), response.error)
+        }
+    }
+    
     func sendTransaction(apiOrder: [ApiType] = DefaultEthApiOrder, error: NSError? = nil, network: Network, rawtx: String, closure: txIdClosure) {
         guard apiOrder.count > 0 else { closure?("", error); return }
         
@@ -296,6 +308,23 @@ extension EthNetworkManager {
             eNotesNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
         default:
             break
+        }
+    }
+    
+    func getTransactionHistory(network: Network, address: String, contract: String?, closure: txsClosure) {
+        var path = ""
+        if contract == nil {
+            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=txlist&address=\(address)&page=1&offset=100&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
+        } else {
+            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=tokentx&contractaddress=\(contract!)&address=\(address)&page=1&offset=100&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
+        }
+        
+        let request = EtherscanTxsRequest()
+        request.path = path
+        EtherscanNetwork.request(request) { (response) in
+            guard response.error == nil else { closure?(nil, response.error); return }
+            guard let model = response.decode(to: EtherscanTxsRaw.self) else { closure?(nil, response.error); return }
+            closure?(model.toTransactionHistory(address: address), nil)
         }
     }
 }

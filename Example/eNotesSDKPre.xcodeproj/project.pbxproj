@@ -23,6 +23,8 @@
 		3C2A4D07217DAA6600F10CC6 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D04217DAA6600F10CC6 /* UIViewController+Extension.swift */; };
 		3C2A4D08217DAA6600F10CC6 /* Validation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D05217DAA6600F10CC6 /* Validation.swift */; };
 		3C2A4D0F217F24F000F10CC6 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C2A4D0E217F24F000F10CC6 /* Alert.swift */; };
+		3CFC4C6C219D79A600CA20AE /* TestCardReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFC4C68219D786200CA20AE /* TestCardReader.swift */; };
+		3CFC4C6D219D79A900CA20AE /* TestNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CFC4C69219D786200CA20AE /* TestNetwork.swift */; };
 		607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACD51AFB9204008FA782 /* AppDelegate.swift */; };
 		607FACDB1AFB9204008FA782 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 607FACD91AFB9204008FA782 /* Main.storyboard */; };
 		607FACDD1AFB9204008FA782 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 607FACDC1AFB9204008FA782 /* Images.xcassets */; };
@@ -71,6 +73,8 @@
 		3C2A4D04217DAA6600F10CC6 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		3C2A4D05217DAA6600F10CC6 /* Validation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Validation.swift; sourceTree = "<group>"; };
 		3C2A4D0E217F24F000F10CC6 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
+		3CFC4C68219D786200CA20AE /* TestCardReader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestCardReader.swift; sourceTree = "<group>"; };
+		3CFC4C69219D786200CA20AE /* TestNetwork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestNetwork.swift; sourceTree = "<group>"; };
 		607FACD01AFB9204008FA782 /* eNotesSDKPre_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = eNotesSDKPre_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		607FACD41AFB9204008FA782 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		607FACD51AFB9204008FA782 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -222,6 +226,8 @@
 		607FACE81AFB9204008FA782 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				3CFC4C68219D786200CA20AE /* TestCardReader.swift */,
+				3CFC4C69219D786200CA20AE /* TestNetwork.swift */,
 				607FACEB1AFB9204008FA782 /* Tests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
@@ -445,6 +451,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3CFC4C6C219D79A600CA20AE /* TestCardReader.swift in Sources */,
+				3CFC4C6D219D79A900CA20AE /* TestNetwork.swift in Sources */,
 				607FACEC1AFB9204008FA782 /* Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

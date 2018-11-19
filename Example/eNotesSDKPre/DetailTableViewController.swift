@@ -69,7 +69,7 @@ class DetailTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        guard indexPath.row == 1 else { return }
+        guard indexPath.row == 2 else { return }
         let pasteBoard = UIPasteboard.general
         pasteBoard.string = addressLabel.text
         Alert.show(leftTxt: nil, msg: "The address has been copied to the clipboard\n\n Address: \(addressLabel.text!)", title: "TIP")

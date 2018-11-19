@@ -36,6 +36,7 @@ let DefaultGasPriceApiOrder: [ApiType] = [.etherchain, .infura, .etherscan] // ,
 /// default btc get fee api order - mainet
 let DefaultBtcFeeApiOrder: [ApiType] = [.blockcypher, .bitcoinfees, .blockexplorer] // , .eNotes
 let DefaultBtcFeeTestApiOrder: [ApiType] = [.blockcypher, .blockexplorer] // , .eNotes
+let DefaultBtcTxsApiOrder: [ApiType] = [.blockexplorer, .blockcypher]
 /// common btc api array
 let BtcCommonApis: [ApiType] = [.blockchain, .blockcypher, .blockexplorer]
 /// send transaction btc api array
@@ -66,6 +67,11 @@ let JsonRpcVersion = "2.0"
 /// infura post param: id
 let InfuraId = 1
 
+// exchange rate request api order
+let DefaultRateApiOrder: [RateApi] = [.coinbase, .bitz, .cryptocompare, .okex] // for eth and btc
+let GusdRateApiOrder: [RateApi] = [.cryptocompare, .okex] // for gusd
+let Usd2OtherApiOrder: [RateApi] = [.bitz, .cryptocompare] // get other currency price per usd
+
 public enum ApiType {
     // eth
     case infura
@@ -92,6 +98,16 @@ public enum Blockchain: Int {
             return "bitcoin"
         case .ethereum:
             return "ethereum"
+        }
+    }
+    
+    /// short value
+    var short: String {
+        switch self {
+        case .bitcoin:
+            return "BTC"
+        default:
+            return "ETH"
         }
     }
 }
@@ -257,4 +273,11 @@ public enum Network: Int {
             fatalError("unsupport type")
         }
     }
+}
+
+enum RateApi {
+    case coinbase
+    case okex
+    case bitz
+    case cryptocompare
 }

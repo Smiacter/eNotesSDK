@@ -82,6 +82,16 @@ extension BtcNetworkManager {
             break
         }
     }
+    func getMultBalances(network: Network, addresses: [String], closure: multBalanceClosure) {
+        let addressStr = EnoteFormatter.packingArrToString(arr: addresses, seperator: "|")
+        let request = BlockchainBalanceRequest()
+        request.path = "\(network.network(api: .blockchain))blockchain.info/multiaddr?active=\(addressStr)&n=1&limit=0&filter=5".urlEncoded()
+        BlockchainNetwork.request(request) { (response) in
+            guard response.error == nil else { closure?(nil, response.error); return }
+            guard let model = response.decode(to: BlockchainMultBalanceRaw.self) else { closure?(nil, response.error); return }
+            closure?(model.toMultBalance(), response.error)
+        }
+    }
     
     func getUtxos(apis: [ApiType] = BtcCommonApis, error: NSError? = nil, network: Network, address: String, closure: btcUtxosClosure) {
         guard apis.count > 0 else { closure?([], error); return }
@@ -245,6 +255,39 @@ extension BtcNetworkManager {
             }
         case .eNotes:
             eNotesNetworkManager.shared.getTxReceipt(blockchain: blockchain, network: network, txid: txid, closure: closure)
+        default:
+            break
+        }
+    }
+    
+    func getTransactionHistory(apis: [ApiType] = DefaultBtcTxsApiOrder, error: NSError? = nil, network: Network, address: String, closure: txsClosure) {
+        guard apis.count > 0 else { closure?(nil, error); return }
+        
+        let api = apis[0]
+        let leftApis = apis.filter{ $0 != api }
+        switch api {
+        case .blockcypher:
+            let request = BlockcypherTxsRequest()
+            request.path = "/\(network.network(api: api))/addrs/\(address)?token=\(BlockcypherApiKeys.random())&limit=100"
+            BlockcypherNetwork.request(request) { (response) in
+                let error = response.error
+                if let model = response.decode(to: BlockcypherTxsRaw.self) {
+                    closure?(model.toTransactionHistory(address: address), response.error)
+                } else {
+                    self.getTransactionHistory(apis: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
+                }
+            }
+        case .blockexplorer:
+            let request = BlockexplorerTxsRequest()
+            request.path = "\(network.network(api: api))blockexplorer.com/api/addrs/\(address)/txs/?from=0&to=50"
+            BlockexplorerNetwork.request(request) { (response) in
+                let error = response.error
+                if let model = response.decode(to: BlockexplorerTxsRaw.self) {
+                    closure?(model.toTransactionHistory(address: address), response.error)
+                } else {
+                    self.getTransactionHistory(apis: leftApis, error: error ?? response.error, network: network, address: address, closure: closure)
+                }
+            }
         default:
             break
         }

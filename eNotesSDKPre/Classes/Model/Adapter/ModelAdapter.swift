@@ -83,6 +83,15 @@ extension Decodable {
         
         return ""
     }
+    func toMultBalance() -> [String]? {
+        if let model = self as? EtherscanMultBalanceRaw {
+            return model.result.map { return $0.balance.strToHex() }
+        } else if let model = self as? BlockchainMultBalanceRaw {
+            return model.addresses.map { return BigNumber(integer: $0.final_balance)?.hexString ?? "0x0" }
+        }
+        
+        return nil
+    }
     
     func toTxId() -> String {
         if let model = self as? InfuraGasPrice {
@@ -149,5 +158,114 @@ extension Decodable {
         }
         
         return 0
+    }
+    
+    func toTransactionHistory(address: String) -> [TransactionHistory] {
+        if let model = self as? BlockexplorerTxsRaw {
+            return model.items.map { tx in
+                var th = TransactionHistory()
+                th.isSender = tx.vin.contains(where: { $0.addr == address })
+                th.time = tx.time
+                th.txid = tx.txid
+                th.confirmations = tx.confirmations
+                th.value = th.isSender ? Int64(tx.valueIn * 100000000) : Int64(tx.valueOut * 100000000)
+                return th
+            }
+        } else if let model = self as? BlockcypherTxsRaw {
+            return model.txrefs.map({ tx in
+                var th = TransactionHistory()
+                th.time = tx.formatTime()
+                th.txid = tx.tx_hash
+                th.confirmations = tx.confirmations
+                th.value = tx.value
+                th.isSender = tx.spent == nil
+                return th
+            })
+        } else if let model = self as? EtherscanTxsRaw {
+            return model.result.map({ tx in
+                var th = TransactionHistory()
+                th.time = TimeInterval(tx.timeStamp) ?? 0
+                th.txid = tx.hash
+                th.confirmations = Int(tx.confirmations) ?? 0
+                th.value = Int64(tx.value) ?? 0
+                th.isSender = tx.from == address
+                return th
+            })
+        }
+        
+        return []
+    }
+}
+
+// MARK: Exchange Rate
+
+extension Decodable {
+    
+    func toExchangeRate() -> ExchangeRate? {
+        if let model = self as? CoinbaseRaw {
+            return ExchangeRate(btc: Double(model.data.rates.BTC) ?? 0,
+                                eth: Double(model.data.rates.ETH) ?? 0,
+                                gusd: nil,
+                                usd: Double(model.data.rates.USD) ?? 0,
+                                cny: Double(model.data.rates.CNY) ?? 0,
+                                eur: Double(model.data.rates.EUR) ?? 0,
+                                jpy: Double(model.data.rates.JPY) ?? 0)
+        } else if let model = self as? BitzRaw {
+            var rates: BitzRates?
+            if model.data.btc != nil {
+                rates = model.data.btc
+            } else if model.data.eth != nil {
+                rates = model.data.eth
+            }
+            guard let rate = rates else { return nil }
+        
+            return ExchangeRate(btc: Double(rate.btc) ?? 0,
+                                eth: Double(rate.eth) ?? 0,
+                                gusd: nil,
+                                usd: Double(rate.usd) ?? 0,
+                                cny: Double(rate.cny) ?? 0,
+                                eur: Double(rate.eur) ?? 0,
+                                jpy: Double(rate.jpy) ?? 0)
+        } else if let model = self as? CryptoCompare {
+            var rates: CryptoCompareRates?
+            if model.BTC != nil {
+                rates = model.BTC
+            } else if model.ETH != nil {
+                rates = model.ETH
+            } else if model.GUSD != nil  {
+                rates = model.GUSD
+            }
+            guard let rate = rates else { return nil }
+            
+            return ExchangeRate(btc: rate.BTC ?? 0,
+                                eth: rate.ETH ?? 0,
+                                gusd: rate.GUSD ?? 0,
+                                usd: rate.USD ?? 0,
+                                cny: rate.CNY ?? 0,
+                                eur: rate.EUR ?? 0,
+                                jpy: rate.JPY ?? 0)
+        }
+        
+        return nil
+    }
+    
+    func toUsd2Other() -> Usd2OtherCurrency? {
+        if let model = self as? BitzRaw, let ethRate = model.data.eth,
+            let usd = Double(ethRate.usd), let cny = Double(ethRate.cny),
+            let eur = Double(ethRate.eur), let jpy = Double(ethRate.jpy), usd != 0 {
+            
+            let usd2cny = cny / usd
+            let usd2eur = eur / usd
+            let usd2jpy = jpy / usd
+            return Usd2OtherCurrency(usd2cny: usd2cny, usd2eur: usd2eur, usd2jpy: usd2jpy)
+            
+        } else if let model = self as? CryptoCompare, let ethRate = model.ETH, let usd = ethRate.USD, usd != 0 {
+            let usd2cny = ethRate.CNY ?? 0 / usd
+            let usd2eur = ethRate.EUR ?? 0 / usd
+            let usd2jpy = ethRate.JPY ?? 0 / usd
+            return Usd2OtherCurrency(usd2cny: usd2cny, usd2eur: usd2eur, usd2jpy: usd2jpy)
+        }
+        
+        return nil
     }
 }

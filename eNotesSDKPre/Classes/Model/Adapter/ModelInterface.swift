@@ -44,3 +44,14 @@ public struct UtxoModel {
     var confirmations: UInt = 0
     var comfirmed: Bool = false
 }
+
+/// Transaction history
+public struct TransactionHistory {
+    var txid: String = ""
+    var time: TimeInterval = 0
+    /// the unit is smallest, btc is satoshi, eth is wei
+    var value: Int64 = 0
+    var confirmations: Int = 0
+    /// sender or receiver
+    var isSender: Bool = true
+}
