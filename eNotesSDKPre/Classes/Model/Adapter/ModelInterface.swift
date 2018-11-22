@@ -37,21 +37,21 @@ public enum ConfirmStatus {
 
 /// Unspend model
 public struct UtxoModel {
-    var txid: String = ""
-    var index: UInt32 = 0
-    var script: String = ""
-    var value: BTCAmount = 0
-    var confirmations: UInt = 0
-    var comfirmed: Bool = false
+    public var txid: String = ""
+    public var index: UInt32 = 0
+    public var script: String = ""
+    public var value: BTCAmount = 0
+    public var confirmations: UInt = 0
+    public var comfirmed: Bool = false
 }
 
 /// Transaction history
 public struct TransactionHistory {
-    var txid: String = ""
-    var time: TimeInterval = 0
+    public var txid: String = ""
+    public var time: TimeInterval = 0
     /// the unit is smallest, btc is satoshi, eth is wei
-    var value: Int64 = 0
-    var confirmations: Int = 0
+    public var value: Int64 = 0
+    public var confirmations: Int = 0
     /// sender or receiver
-    var isSender: Bool = true
+    public var isSender: Bool = true
 }

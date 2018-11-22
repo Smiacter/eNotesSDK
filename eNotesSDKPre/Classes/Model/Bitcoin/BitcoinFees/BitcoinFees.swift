@@ -25,7 +25,7 @@
 //
 
 public struct BitcoinFees: Decodable {
-    var fastestFee: Int
-    var halfHourFee: Int
-    var hourFee: Int
+    public var fastestFee: Int
+    public var halfHourFee: Int
+    public var hourFee: Int
 }

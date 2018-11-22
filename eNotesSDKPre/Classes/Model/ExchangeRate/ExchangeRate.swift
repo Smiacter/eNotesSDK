@@ -6,11 +6,11 @@
 //
 
 public struct ExchangeRate {
-    var btc: Double
-    var eth: Double
-    var gusd: Double?
-    var usd: Double
-    var cny: Double
-    var eur: Double
-    var jpy: Double
+    public var btc: Double
+    public var eth: Double
+    public var gusd: Double?
+    public var usd: Double
+    public var cny: Double
+    public var eur: Double
+    public var jpy: Double
 }
