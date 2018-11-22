@@ -33,7 +33,7 @@ class CertificateParser: NSObject {
     private var decoder: X509Certificate?
     private var tbsCertificateAndSig :Data!
     private var tbsCertificate :Data!
-    private var version: Int = -1
+    private(set) var version: Int = -1
     private var r = ""
     private var s = ""
     /// vendorName

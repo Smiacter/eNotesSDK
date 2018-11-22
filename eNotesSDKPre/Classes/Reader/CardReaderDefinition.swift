@@ -38,6 +38,7 @@ let TagVerificationSignature = "73"
 let TagTransactionSignatureCounter = "90"
 let TagTransactionHash = "91"
 let TagTransactionSignature = "92"
+let TagApduVersion = "12"
 
 /// error in card read processing
 ///
@@ -46,6 +47,7 @@ let TagTransactionSignature = "92"
 /// absent: card absent status, now card should present on device to continue
 /// parsing: card is in apdu parsing
 /// apduReaderError: apdu command read error
+/// apduVersionTooLow: version of the apdu protocol is too low
 /// verifyError: verify certificate, device or blockchain error
 public enum CardReaderError {
     case none
@@ -53,6 +55,7 @@ public enum CardReaderError {
     case absent
     case parsing
     case apduReaderError
+    case apduVersionTooLow
     case verifyError
 }
 
@@ -60,6 +63,7 @@ public enum CardReaderError {
 ///
 /// none: everything is ok, on error there
 /// aid: Application id in device which you can identify your application to send apdu
+/// version: support apdu protocol version
 /// publicKey: blockchain public key, get it by send apdu command
 /// cardStatus: safe or danger
 /// certificate: card certificate, need verify, get public key by 'call'(public key -> certificate private key)
@@ -70,6 +74,7 @@ public enum CardReaderError {
 public enum Apdu: Equatable {
     case none
     case aid
+    case version
     case publicKey
     case cardStatus
     case certificate(String)
@@ -83,6 +88,8 @@ public enum Apdu: Equatable {
             return ""
         case .aid:
             return "00A404000C654e6f7465734170706c6574"
+        case .version:
+            return "00CA0012"
         case .publicKey:
             return "00CA0055"
         case .certificate(let p1):

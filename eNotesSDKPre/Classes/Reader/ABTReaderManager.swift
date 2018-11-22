@@ -129,6 +129,21 @@ extension ABTReaderManager {
         return Tlv.decode(data: apdu)
     }
     
+    /// verify apdu version
+    private func verifyApduVersion(rawApdu: Data) {
+        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        let tag = Data(hex: TagApduVersion)
+        guard let version = tv[tag] else {
+            CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
+            return
+        }
+        guard let versionStr = String(data: version, encoding: .utf8), versionStr == "1.0.0" else {
+            CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow)
+            return
+        }
+        sendApdu(apdu: .publicKey)
+    }
+    
     /// Save public key for global use
     func savePublicKey(rawApdu: Data) {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
@@ -162,6 +177,7 @@ extension ABTReaderManager {
     func verifyCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
+        guard certParser.version == 1 else { CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow); return }
         card = certParser.toCard()
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)
@@ -282,7 +298,9 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
         guard error == nil else { return }
         switch self.apdu {
         case .aid:
-            sendApdu(apdu: .publicKey)
+            sendApdu(apdu: .version)
+        case .version:
+            verifyApduVersion(rawApdu: apdu)
         case .publicKey:
             savePublicKey(rawApdu: apdu)
             sendApdu(apdu: .cardStatus)
@@ -355,7 +373,7 @@ extension ABTReaderManager {
             verifyBlockchain(rawApdu: Data(hex: result))
         case .signPrivateKey:
             signPrivateKey(rawApdu: Data(hex: result))
-        case .none: break
+        case .none, .version: break
         }
     }
 }
