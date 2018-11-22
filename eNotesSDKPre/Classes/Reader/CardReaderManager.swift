@@ -88,17 +88,17 @@ extension CardReaderManager {
         }
     }
     
-    func didBluetoothConnected() {
+    func didBluetoothConnected(peripheral: CBPeripheral) {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothConnected()
+            observer.didBluetoothConnected(peripheral: peripheral)
         }
     }
     
-    func didBluetoothDisconnect() {
+    func didBluetoothDisconnect(peripheral: CBPeripheral?) {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothDisconnect()        }
+            observer.didBluetoothDisconnect(peripheral: peripheral)        }
     }
     
     func didBluetoothUpdateState(state: CBManagerState) {
@@ -197,7 +197,7 @@ extension CardReaderManager: CBCentralManagerDelegate {
     public  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         self.peripheral = peripheral
         detectReader(with: peripheral)
-        didBluetoothConnected()
+        didBluetoothConnected(peripheral: peripheral)
     }
     
     public  func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -208,7 +208,7 @@ extension CardReaderManager: CBCentralManagerDelegate {
         if self.peripheral != nil {
             self.peripheral = nil
         }
-        didBluetoothDisconnect()
+        didBluetoothDisconnect(peripheral: peripheral)
         if error != nil {
             
         } else {

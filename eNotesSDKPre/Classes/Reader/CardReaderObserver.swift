@@ -32,9 +32,9 @@ public protocol CardReaderObserver: class {
     /// Discoverd peripherals
     func didDiscover(peripherals: [CBPeripheral])
     /// Bluetooth connected, when attached to reader
-    func didBluetoothConnected()
+    func didBluetoothConnected(peripheral: CBPeripheral)
     /// Bluetooth disconnected, error occurred or manually disconnect
-    func didBluetoothDisconnect()
+    func didBluetoothDisconnect(peripheral: CBPeripheral?)
     /// Bluetooth state changed, see CBManagerState for more
     func didBluetoothUpdateState(state: CBManagerState)
     /// Card reader progress done, return card info if success, return error if fail
@@ -52,8 +52,8 @@ public protocol CardReaderObserver: class {
 public extension CardReaderObserver {
     
     func didDiscover(peripherals: [CBPeripheral]) {}
-    func didBluetoothConnected() {}
-    func didBluetoothDisconnect() {}
+    func didBluetoothConnected(peripheral: CBPeripheral) {}
+    func didBluetoothDisconnect(peripheral: CBPeripheral?) {}
     func didBluetoothUpdateState(state: CBManagerState) {}
     func didCardPresent() {}
     func didCardAbsent() {}

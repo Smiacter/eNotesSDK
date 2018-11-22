@@ -8,6 +8,7 @@
 
 import UIKit
 import eNotesSDKPre
+import CoreBluetooth
 
 class BluetoothCell: UITableViewCell {
     @IBOutlet weak var nameLabel: UILabel!
@@ -32,11 +33,11 @@ extension BluetoothCell: CardReaderObserver {
         
     }
     
-    func didBluetoothConnected() {
+    func didBluetoothConnected(peripheral: CBPeripheral) {
         connectStatusLabel.text = "ble connected"
     }
     
-    func didBluetoothDisconnect() {
+    func didBluetoothDisconnect(peripheral: CBPeripheral?) {
         connectStatusLabel.text = "ble disconnected"
     }
     

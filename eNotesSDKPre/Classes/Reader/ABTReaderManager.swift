@@ -282,7 +282,7 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
         } else if cardStatus == ABTBluetoothReaderCardStatusAbsent {
             CardReaderManager.shared.didCardAbsent()
         } else if cardStatus == ABTBluetoothReaderCardStatusPowerSavingMode {
-            CardReaderManager.shared.didBluetoothDisconnect()
+            CardReaderManager.shared.didBluetoothDisconnect(peripheral: nil)
         }
     }
     
