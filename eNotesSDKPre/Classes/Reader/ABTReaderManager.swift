@@ -137,7 +137,7 @@ extension ABTReaderManager {
             CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
             return
         }
-        guard let versionStr = String(data: version, encoding: .utf8), versionStr == "1.0.0" else {
+        guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu else {
             CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow)
             return
         }
@@ -177,7 +177,7 @@ extension ABTReaderManager {
     func verifyCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
-        guard certParser.version == 1 else { CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow); return }
+        guard certParser.version == VersionCertificate else { CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow); return }
         card = certParser.toCard()
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)

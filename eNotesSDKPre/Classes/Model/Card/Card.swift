@@ -48,4 +48,6 @@ public struct Card {
     public var name: String?
     public var symbol: String?
     public var decimals = 0
+    
+    public init() {}
 }
