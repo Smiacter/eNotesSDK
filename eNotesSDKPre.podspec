@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'eNotesSDKPre'
-  s.version          = '0.0.6'
+  s.version          = '0.0.7'
   s.summary          = 'eNotes, a negotiable private key'
   s.description      = <<-DESC
   eNotesSDK, provide an esay way to use blockchain

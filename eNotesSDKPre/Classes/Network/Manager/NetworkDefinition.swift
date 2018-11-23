@@ -275,7 +275,7 @@ public enum Network: Int {
     }
 }
 
-enum RateApi {
+public enum RateApi {
     case coinbase
     case okex
     case bitz

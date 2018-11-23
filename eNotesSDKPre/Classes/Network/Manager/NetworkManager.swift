@@ -47,7 +47,7 @@ public typealias ethEstimateGasClosure = ((String, NSError?) -> ())?
 /// call, String: call result, NSError?: network or decode error
 public typealias ethCallClosure = ((String, NSError?) -> ())?
 /// blockchain exchange rate, Double?: rate, NSError?: network or decode error
-public typealias exchangeRateClosure = ((ExchangeRate?, NSError?) -> ())?
+public typealias exchangeRateClosure = ((ExchangeRate?, RateApi?, NSError?) -> ())?
 /// blockchain transaction history, list of transaction history, NSError?: network or decode error
 public typealias txsClosure = (([TransactionHistory]?, NSError?) -> ())?
 
@@ -272,7 +272,7 @@ extension NetworkManager {
     }
     
     private func getExchangeRate(apiOrder: [RateApi] = DefaultRateApiOrder, error: NSError? = nil, blockchain: Blockchain, contract: String? = nil, closure: exchangeRateClosure) {
-        guard apiOrder.count > 0 else { closure?(nil, error); return }
+        guard apiOrder.count > 0 else { closure?(nil, nil, error); return }
         
         let api = apiOrder[0]
         let leftApis = apiOrder.filter{ $0 != api }
@@ -283,19 +283,19 @@ extension NetworkManager {
             CoinbaseNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: CoinbaseRaw.self) {
-                    closure?(model.toExchangeRate(), nil)
+                    closure?(model.toExchangeRate(), api, nil)
                 } else {
                     self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
                 }
             }
         case .okex:
-            getOkexRate(blockchain: blockchain, contract: contract) { (rate, error) in
+            getOkexRate(blockchain: blockchain, contract: contract) { (rate, type, error) in
                 guard error == nil else {
                     self.getExchangeRate(apiOrder: leftApis, error: error, blockchain: blockchain, closure: closure)
                     return
                 }
 
-                closure?(rate, nil)
+                closure?(rate, api, nil)
             }
         case .bitz:
             let request = BitzRateRequest()
@@ -303,7 +303,7 @@ extension NetworkManager {
             BitzNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BitzRaw.self) {
-                    closure?(model.toExchangeRate(), nil)
+                    closure?(model.toExchangeRate(), api, nil)
                 } else {
                     self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
                 }
@@ -315,7 +315,7 @@ extension NetworkManager {
             CryptoCompareNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: CryptoCompare.self) {
-                    closure?(model.toExchangeRate(), nil)
+                    closure?(model.toExchangeRate(), api, nil)
                 } else {
                     self.getExchangeRate(apiOrder: leftApis, error: error ?? response.error, blockchain: blockchain, closure: closure)
                 }
@@ -368,7 +368,7 @@ extension NetworkManager {
             guard let gusd2btcRate = gusd2btcRate, let eth2btcRate = eth2btcRate,
                 let btc2usdRate = btc2usdRate, let curreny = curreny else {
                 let error = NSError(domain: "okex rate get failed", code: -10086, userInfo: nil)
-                closure?(nil, error)
+                closure?(nil, nil, error)
                 return
             }
             /// gusd
@@ -387,7 +387,7 @@ extension NetworkManager {
                                                 cny: cny,
                                                 eur: eur,
                                                 jpy: jpy)
-                closure?(exchangeRate, nil)
+                closure?(exchangeRate, .okex, nil)
                 return
             }
             // btc or eth
@@ -407,7 +407,7 @@ extension NetworkManager {
                                                 cny: cny,
                                                 eur: eur,
                                                 jpy: jpy)
-                closure?(exchangeRate, nil)
+                closure?(exchangeRate, .okex, nil)
             case .ethereum:
                 let eth: Double = 1
                 let btc = eth2btcRate
@@ -423,7 +423,7 @@ extension NetworkManager {
                                                 cny: cny,
                                                 eur: eur,
                                                 jpy: jpy)
-                closure?(exchangeRate, nil)
+                closure?(exchangeRate, .okex, nil)
             }
         }
     }
