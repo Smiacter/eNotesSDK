@@ -50,7 +50,7 @@ public class CardReaderManager: NSObject {
     private var devices = [ServerBluetoothDevice]() {
         didSet { didDiscoverDevices() }
     }
-    private var connectId = 0
+    private var connectId: Int?
     // ABTReader
     private let abtManager = ABTReaderManager()
 }
