@@ -42,6 +42,9 @@ let TagTransactionSignatureCounter = "90"
 let TagTransactionHash = "91"
 let TagTransactionSignature = "92"
 let TagApduVersion = "12"
+let TagFreeze = "93"
+let TagFreezeStatus = "94"
+let TagUnFreezeLeftCount = "95"
 
 /// error in card read processing
 ///
@@ -84,6 +87,10 @@ public enum Apdu: Equatable {
     case verifyDevice
     case verifyBlockchain
     case signPrivateKey
+    case freezeStatus
+    case unfreezeLeftCount
+    case freeze
+    case unfreeze
     
     var value: String {
         switch self {
@@ -105,6 +112,20 @@ public enum Apdu: Equatable {
             return "0088540022"
         case .signPrivateKey:
             return "00A0540022"
+        case .freezeStatus:
+            return "00CA0094"
+        case .unfreezeLeftCount:
+            return "00CA0095"
+        case .freeze:
+            return "0028940008"
+        case .unfreeze:
+            return "0026940008"
         }
     }
+}
+
+public enum FreezeResult {
+    case success
+    case wrongFreezePin
+    case frozenAlready
 }

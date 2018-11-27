@@ -69,6 +69,27 @@ class DetailTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch indexPath.row {
+        case 9:
+            CardReaderManager.shared.getFreezeStatus { (isFrozen) in
+                print("isFroze: \(isFrozen)")
+            }
+        case 10:
+            CardReaderManager.shared.getUnfreezeLeftCount { (count) in
+                print("left count: \(count)")
+            }
+        case 11:
+            CardReaderManager.shared.freeze(pinStr: "123456") { (result) in
+                print("result: \(result)")
+            }
+        case 12:
+            CardReaderManager.shared.unfreeze(pinStr: "123459") { (result) in
+                print("result: \(result)")
+            }
+        default:break
+        }
+        
         guard indexPath.row == 2 else { return }
         let pasteBoard = UIPasteboard.general
         pasteBoard.string = addressLabel.text

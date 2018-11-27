@@ -384,6 +384,33 @@ extension CardReaderManager {
     }
 }
 
+// MARK: Freeze PIN
+
+public typealias freezeStatusClosure = ((Bool) -> ())?
+public typealias unfreezeLeftCountClosure = ((Int) -> ())?
+public typealias freezeResultClosure = ((FreezeResult) -> ())?
+extension CardReaderManager {
+    
+    public func getFreezeStatus(closure: freezeStatusClosure) {
+        abtManager.getFreezeStatus()
+        abtManager.freezeStatusClosure = { closure?($0) }
+    }
+    
+    public func getUnfreezeLeftCount(closure: unfreezeLeftCountClosure) {
+        abtManager.getUnFreezeLeftCount()
+        abtManager.unfreezeLeftCountClosure = { closure?($0) }
+    }
+    
+    public func freeze(pinStr: String, closure: freezeResultClosure) {
+        abtManager.freeze(pinStr: pinStr)
+        abtManager.freezeResultClosure = { closure?($0) }
+    }
+    public func unfreeze(pinStr: String, closure: freezeResultClosure) {
+        abtManager.unfreeze(pinStr: pinStr)
+        abtManager.freezeResultClosure = { closure?($0) }
+    }
+}
+
 // MARK: Use Http server to simulate real NFC Bluetooth device
 
 extension CardReaderManager {

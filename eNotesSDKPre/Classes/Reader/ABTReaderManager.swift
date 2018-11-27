@@ -26,11 +26,15 @@
 
 import UIKit
 import CoreBluetooth
+import ethers
 
 class ABTReaderManager: NSObject {
     var manager = ABTBluetoothReaderManager()
     var reader : ABTBluetoothReader!
     var signPrivateKeyClosure: ((String) -> ())?
+    var freezeStatusClosure: ((Bool) -> ())?
+    var unfreezeLeftCountClosure: ((Int) -> ())?
+    var freezeResultClosure: ((FreezeResult) -> ())?
     
     private var apdu: Apdu = .none
     private var random = ""
@@ -55,6 +59,29 @@ extension ABTReaderManager {
         let apduStr = apdu.value + serialData.toHexString()
         guard let id = id else { reader.transmitApdu(Data(hex: apduStr)); return }
         transceiveApdu(apdu: apdu, value: apduStr, id: id)
+    }
+    
+    func getFreezeStatus() {
+        sendApdu(apdu: .freezeStatus)
+    }
+    func getUnFreezeLeftCount() {
+        sendApdu(apdu: .unfreezeLeftCount)
+    }
+    func freeze(pinStr: String) {
+        guard let pinData = pinStr.data(using: .utf8) else { return }
+        apdu = .freeze
+        let tv = Tlv.generate(tag: Data(hex: TagFreeze), value: pinData)
+        let serialData = Tlv.encode(tv: tv)
+        let apduStr = apdu.value + serialData.toHexString()
+        reader.transmitApdu(Data(hex: apduStr))
+    }
+    func unfreeze(pinStr: String) {
+        guard let pinData = pinStr.data(using: .utf8) else { return }
+        apdu = .unfreeze
+        let tv = Tlv.generate(tag: Data(hex: TagFreeze), value: pinData)
+        let serialData = Tlv.encode(tv: tv)
+        let apduStr = apdu.value + serialData.toHexString()
+        reader.transmitApdu(Data(hex: apduStr))
     }
 }
 
@@ -249,6 +276,28 @@ extension ABTReaderManager {
         }
         signPrivateKeyClosure?(privateStr)
     }
+    
+    func parseFreezeStatus(rawApdu: Data) {
+        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        let tag = Data(hex: TagFreezeStatus)
+        guard let statusData = tv[tag], let freezeStatus = BTCHexFromData(statusData) else { return }
+        freezeStatusClosure?(freezeStatus != "00")
+    }
+    func parseUnFreezeLeftCount(rawApdu: Data) {
+        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        let tag = Data(hex: TagUnFreezeLeftCount)
+        guard let unfreezeCountData = tv[tag], let unfreezeCount = BTCHexFromData(unfreezeCountData) else { return }
+        unfreezeLeftCountClosure?(BigNumber(hexString: unfreezeCount.addHexPrefix())?.integerValue ?? 0)
+    }
+    func parseFreeze(rawApdu: Data) {
+        if rawApdu.toHexString() == "9000" {
+            freezeResultClosure?(.success)
+        } else if rawApdu.toHexString() == "6982" {
+            freezeResultClosure?(.wrongFreezePin)
+        } else if rawApdu.toHexString() == "6985" {
+            freezeResultClosure?(.frozenAlready)
+        }
+    }
 }
 
 extension ABTReaderManager: ABTBluetoothReaderManagerDelegate {
@@ -323,6 +372,14 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             verifyBlockchain(rawApdu: apdu)
         case .signPrivateKey:
             signPrivateKey(rawApdu: apdu)
+        case .freezeStatus:
+            parseFreezeStatus(rawApdu: apdu)
+        case .unfreezeLeftCount:
+            parseUnFreezeLeftCount(rawApdu: apdu)
+        case .freeze:
+            parseFreeze(rawApdu: apdu)
+        case .unfreeze:
+            parseFreeze(rawApdu: apdu)
         case .none:break
         }
     }
@@ -373,7 +430,7 @@ extension ABTReaderManager {
             verifyBlockchain(rawApdu: Data(hex: result))
         case .signPrivateKey:
             signPrivateKey(rawApdu: Data(hex: result))
-        case .none, .version: break
+        case .none, .version, .freezeStatus, .unfreezeLeftCount, .freeze, .unfreeze: break
         }
     }
 }
