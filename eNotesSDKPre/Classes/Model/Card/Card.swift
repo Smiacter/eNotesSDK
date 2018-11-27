@@ -44,6 +44,7 @@ public struct Card {
     public var address = ""
     public var isSafe = true
     public var publicKeyData: Data?
+    public var isFrozen = false
     // ERC20 token info
     public var name: String?
     public var symbol: String?

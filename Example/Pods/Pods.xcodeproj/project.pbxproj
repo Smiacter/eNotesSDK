@@ -1511,10 +1511,10 @@
 		602CD45C8A5467CE4DE25D121B5D45D4 /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				93FA354B9968D495C4A4AC0C0C1C6DF9 /* ABTReaderManager.swift */,
-				F27F27DBC39B62B2AD5B2A0B84BD19FB /* CardReaderDefinition.swift */,
-				0B348331CB35DEF1396EE5921ED884F4 /* CardReaderManager.swift */,
 				CD3D675109EFF6A012EE268CADBFAB58 /* CardReaderObserver.swift */,
+				F27F27DBC39B62B2AD5B2A0B84BD19FB /* CardReaderDefinition.swift */,
+				93FA354B9968D495C4A4AC0C0C1C6DF9 /* ABTReaderManager.swift */,
+				0B348331CB35DEF1396EE5921ED884F4 /* CardReaderManager.swift */,
 			);
 			name = Reader;
 			path = eNotesSDKPre/Classes/Reader;

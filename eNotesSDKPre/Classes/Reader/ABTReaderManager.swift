@@ -40,6 +40,8 @@ class ABTReaderManager: NSObject {
     private var random = ""
     private var publicKey: Data?
     private var status = ""
+    private var isFrozen = false
+    private var isParseToSetFrozenStatus = true
     private var certP1 = 0
     private var cert = Data()
     private var card = Card()
@@ -62,6 +64,8 @@ extension ABTReaderManager {
     }
     
     func getFreezeStatus() {
+        // call SDK to get frozen status
+        isParseToSetFrozenStatus = false
         sendApdu(apdu: .freezeStatus)
     }
     func getUnFreezeLeftCount() {
@@ -209,6 +213,7 @@ extension ABTReaderManager {
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)
         card.isSafe = status == "0000"
+        card.isFrozen = isFrozen
         let certificate = card.tbsCertificate.toHexString()
         let certificateAndSig = card.tbsCertificateAndSig.toHexString()
         let postion = certificateAndSig.positionOf(subStr: certificate)
@@ -281,7 +286,8 @@ extension ABTReaderManager {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagFreezeStatus)
         guard let statusData = tv[tag], let freezeStatus = BTCHexFromData(statusData) else { return }
-        freezeStatusClosure?(freezeStatus != "00")
+        isFrozen = freezeStatus != "00"
+        freezeStatusClosure?(isFrozen)
     }
     func parseUnFreezeLeftCount(rawApdu: Data) {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
@@ -355,7 +361,10 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             sendApdu(apdu: .cardStatus)
         case .cardStatus:
             saveCardStatus(rawApdu: apdu)
-            sendApdu(apdu: .certificate("\(certP1)"))
+            sendApdu(apdu: .freezeStatus)
+        case .freezeStatus:
+            parseFreezeStatus(rawApdu: apdu)
+            isParseToSetFrozenStatus ? sendApdu(apdu: .certificate("\(certP1)")) : ()
         case .certificate:
             if let data = getCertificateData(rawApdu: apdu) {
                 self.cert.append(data)
@@ -372,8 +381,6 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             verifyBlockchain(rawApdu: apdu)
         case .signPrivateKey:
             signPrivateKey(rawApdu: apdu)
-        case .freezeStatus:
-            parseFreezeStatus(rawApdu: apdu)
         case .unfreezeLeftCount:
             parseUnFreezeLeftCount(rawApdu: apdu)
         case .freeze:
