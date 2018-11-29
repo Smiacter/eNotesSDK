@@ -37,6 +37,8 @@ class ABTReaderManager: NSObject {
     var freezeResultClosure: ((FreezeResult) -> ())?
     
     private var apdu: Apdu = .none
+    private var connectStatus: CardConnecetStatus = .disconnected
+    private var absentCount = 0
     private var random = ""
     private var publicKey: Data?
     private var status = ""
@@ -48,6 +50,10 @@ class ABTReaderManager: NSObject {
 }
 
 extension ABTReaderManager {
+    
+    func getConnectStatus() -> CardConnecetStatus {
+        return connectStatus
+    }
     
     func detectReader(with peripheral: CBPeripheral) {
         manager.delegate = self
@@ -109,6 +115,11 @@ extension ABTReaderManager {
     func powerOn() {
         reader.powerOnCard()
     }
+    
+    private func throwError(error: CardReaderError) {
+        connectStatus = .error
+        CardReaderManager.shared.didCardRead(card: nil, error: error)
+    }
 }
 
 // MARK: Apdu command handle
@@ -154,7 +165,6 @@ extension ABTReaderManager {
     
     func getTv(rawApdu: Data) -> Tv? {
         guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
             return nil
         }
         return Tlv.decode(data: apdu)
@@ -162,43 +172,31 @@ extension ABTReaderManager {
     
     /// verify apdu version
     private func verifyApduVersion(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagApduVersion)
-        guard let version = tv[tag] else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
-            return
-        }
-        guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow)
-            return
-        }
+        guard let version = tv[tag] else { throwError(error: .apduReaderError); return }
+        guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu else { throwError(error: .apduVersionTooLow); return }
         sendApdu(apdu: .publicKey)
     }
     
     /// Save public key for global use
     func savePublicKey(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagBlockChainPublicKey)
-        guard let publicKey = tv[tag] else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
-            return
-        }
+        guard let publicKey = tv[tag] else { throwError(error: .apduReaderError); return }
         self.publicKey = publicKey
     }
     
     /// Save card safe status for global use
     func saveCardStatus(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagTransactionSignatureCounter)
-        guard let status = tv[tag] else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .apduReaderError)
-            return
-        }
+        guard let status = tv[tag] else { throwError(error: .apduReaderError); return }
         self.status = status.toHexString()
     }
     
     func getCertificateData(rawApdu: Data) -> Data? {
-        guard let tv = getTv(rawApdu: rawApdu) else { return nil}
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return nil}
         let tag = Data(hex: TagDeviceCertificate)
         guard let cert = tv[tag] else { return nil }
         return cert
@@ -206,9 +204,9 @@ extension ABTReaderManager {
     
     /// if id is not nil, means you use HTTP Server to simulate NFC Device
     func verifyCertificate(id: Int? = nil) {
-        guard !cert.isEmpty else { return }
+        guard !cert.isEmpty else { throwError(error: .apduReaderError); return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
-        guard certParser.version == VersionCertificate else { CardReaderManager.shared.didCardRead(card: nil, error: .apduVersionTooLow); return }
+        guard certParser.version == VersionCertificate else { throwError(error: .apduVersionTooLow); return }
         card = certParser.toCard()
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)
@@ -220,61 +218,57 @@ extension ABTReaderManager {
         let certficateStr = certificateAndSig.subString(to: postion + certificate.count)
         
         func verify(publicKey: Data?) {
-            guard let publicKey = publicKey else { return }
+            guard let publicKey = publicKey else { throwError(error: .apduReaderError); return }
             guard Verification.verify(r: card.r, s: card.s, org: certficateStr, publicKey: publicKey.toHexString()) else {
-                CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
-                return
+                throwError(error: .verifyError); return
             }
             guard let id = id else { sendApdu(apdu: .verifyDevice); return }
-            guard let apdu = getApduData(tag: TagChallenge, apdu: .verifyDevice) else { return }
+            guard let apdu = getApduData(tag: TagChallenge, apdu: .verifyDevice) else { throwError(error: .apduReaderError); return }
             transceiveApdu(apdu: .verifyDevice, value: apdu.toHexString(), id: id)
         }
         
         let data = AbiParser.encodePublicKeyData(issuer: card.issuer.uppercased(), batch: card.manufactureBatch)
         let network: Network = card.serialNumber.lowercased().hasPrefix(EthCallTestPrefix) ? .kovan : .ethereum
-        NetworkManager.shared.call(network: network, toAddress: network.contractAddress, data: data) { (result, error) in
-            guard error == nil else { return }
+        NetworkManager.shared.call(network: network, toAddress: network.contractAddress, data: data) { [weak self] (result, error) in
+            guard error == nil else { self?.throwError(error: .apduReaderError); return }
             let publicKey = AbiParser.decodePublicKeyData(result: result)
             verify(publicKey: publicKey)
         }
     }
     
     func verifyDevice(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tagSign = Data(hex: TagVerificationSignature), tagSalt = Data(hex: TagSalt)
         guard let signature = tv[tagSign], let salt = tv[tagSalt] else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
-            return
+            throwError(error: .verifyError); return
         }
         let org = random.appending(salt.toHexString())
         let r = signature.subdata(in: 0..<32).toHexString()
         let s = signature.subdata(in: 32..<signature.count).toHexString()
         guard Verification.verify(r: r, s: s, org: org, publicKey: card.publicKey) else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
-            return
+            throwError(error: .verifyError); return
         }
     }
     
     func verifyBlockchain(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let typeSignature = Data(hex: TagVerificationSignature), typeSalt = Data(hex: TagSalt)
         guard let signature = tv[typeSignature], let salt = tv[typeSalt], let publicKey = publicKey else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
-            return
+            throwError(error: .verifyError); return
         }
         let org = random.appending(salt.toHexString())
         let r = signature.subdata(in: 0..<32).toHexString()
         let s = signature.subdata(in: 32..<signature.count).toHexString()
         guard Verification.verify(r: r, s: s, org: org, publicKey: publicKey.toHexString()) else {
-            CardReaderManager.shared.didCardRead(card: nil, error: .verifyError)
-            return
+            throwError(error: .verifyError); return
         }
         // card read flow over
+        connectStatus = .connected
         CardReaderManager.shared.didCardRead(card: card, error: nil)
     }
     
     func signPrivateKey(rawApdu: Data) {
-        guard let tv = getTv(rawApdu: rawApdu) else { return }
+        guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagTransactionSignature)
         guard let signature = tv[tag], let privateStr = BTCHexFromData(signature) else {
             return
@@ -320,6 +314,7 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
     public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didAttach peripheral: CBPeripheral!, error: Error!) {
         guard error == nil else {return}
         // first step: authenticate the card when peripheral attach to reader
+        connectStatus = .disconnected
         authenticate()
     }
     
@@ -334,10 +329,16 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
         if cardStatus == ABTBluetoothReaderCardStatusPresent {
             powerOn()
             CardReaderManager.shared.didCardPresent()
+            connectStatus = .progress
         } else if cardStatus == ABTBluetoothReaderCardStatusAbsent {
             CardReaderManager.shared.didCardAbsent()
+            if connectStatus == .disconnected {
+                throwError(error: .deviceNotFound)
+            }
+            connectStatus = .absent
         } else if cardStatus == ABTBluetoothReaderCardStatusPowerSavingMode {
             CardReaderManager.shared.didBluetoothDisconnect(peripheral: nil)
+            connectStatus = .disconnected
         }
     }
     
@@ -350,7 +351,16 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
     }
     
     public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didReturnResponseApdu apdu: Data!, error: Error!) {
-        guard error == nil else { return }
+        guard error == nil else {
+            if absentCount < 3 {
+                throwError(error: .absent)
+            } else {
+                throwError(error: .absentLimit)
+                absentCount = 0
+            }
+            absentCount += 1
+            return
+        }
         switch self.apdu {
         case .aid:
             sendApdu(apdu: .version)

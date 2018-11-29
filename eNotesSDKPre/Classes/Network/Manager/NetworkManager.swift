@@ -74,7 +74,7 @@ public class NetworkManager: NSObject {
         reachabilityManager?.startListening()
     }
     
-    func isReachable() -> Bool {
+    public func isReachable() -> Bool {
         return reachabilityManager?.isReachable ?? false
     }
 }
@@ -160,16 +160,21 @@ public extension NetworkManager {
     ///  - blockchain: btc or eth, see Blockchain
     ///  - network: mainnet, ethereum... see Network
     ///  - address: specified address
+    ///  - contract: contract address if have
     ///  - closure: receipt result callback
     ///   - [TransactionHistory]: confirmed or confirming, see ConfirmStatus
     ///   - NSError?: network or decode error if occurred
-    func getTransactionHistory(blockchain: Blockchain, error: NSError? = nil, network: Network, address: String, contract: String?, closure: txsClosure) {
+    func getTransactionHistory(blockchain: Blockchain, network: Network, address: String, contract: String?, closure: txsClosure) {
         switch blockchain {
         case .bitcoin:
             BtcNetworkManager.shared.getTransactionHistory(network: network, address: address, closure: closure)
         case .ethereum:
             EthNetworkManager.shared.getTransactionHistory(network: network, address: address, contract: contract, closure: closure)
         }
+    }
+    
+    func subscribeNotification(blockchain: Blockchain, clientId: String, network: Network, txid: String) {
+        eNotesNetworkManager.shared.subscribeNotification(blockchain: blockchain, clientId: clientId, network: network, txid: txid)
     }
 }
 

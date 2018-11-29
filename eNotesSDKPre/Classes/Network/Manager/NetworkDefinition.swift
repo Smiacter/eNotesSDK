@@ -24,23 +24,25 @@
 //  THE SOFTWARE.
 //
 
+let enableEnotesApi = true
+
 /// timeout for request
 let timeoutForRequest: TimeInterval = 5
 typealias RequestTuple = (apiType: ApiType, isHandled: Bool)
 typealias EthRequestOrder = [RequestTuple]
 /// defualt eth api request order except gas price
-let DefaultEthApiOrder: [ApiType] = [.infura, .etherscan] // , .eNotes
+let DefaultEthApiOrder: [ApiType] = enableEnotesApi ? [.infura, .etherscan, .eNotes] : [.infura, .etherscan]
 /// default eth gas price request order
-let DefaultGasPriceApiOrder: [ApiType] = [.etherchain, .infura, .etherscan] // , .eNotes
+let DefaultGasPriceApiOrder: [ApiType] = enableEnotesApi ? [.etherchain, .infura, .etherscan, .eNotes] :  [.etherchain, .infura, .etherscan]
 
 /// default btc get fee api order - mainet
-let DefaultBtcFeeApiOrder: [ApiType] = [.blockcypher, .bitcoinfees, .blockexplorer] // , .eNotes
-let DefaultBtcFeeTestApiOrder: [ApiType] = [.blockcypher, .blockexplorer] // , .eNotes
+let DefaultBtcFeeApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .bitcoinfees, .blockexplorer, .eNotes] : [.blockcypher, .bitcoinfees, .blockexplorer]
+let DefaultBtcFeeTestApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .blockexplorer, .eNotes] :  [.blockcypher, .blockexplorer]
 let DefaultBtcTxsApiOrder: [ApiType] = [.blockexplorer, .blockcypher]
 /// common btc api array
-let BtcCommonApis: [ApiType] = [.blockchain, .blockcypher, .blockexplorer]
+let BtcCommonApis: [ApiType] = enableEnotesApi ?  [.blockchain, .blockcypher, .blockexplorer, .eNotes] : [.blockchain, .blockcypher, .blockexplorer]
 /// send transaction btc api array
-let BtcSendTxApis: [ApiType] = [.blockcypher, .blockexplorer]
+let BtcSendTxApis: [ApiType] = enableEnotesApi ?  [.blockcypher, .blockexplorer, .eNotes] : [.blockcypher, .blockexplorer]
 
 /// api keys - etherscan
 let EtherscanApiKeys = ["JVSWRAFRJZ5I5ANGHS3SVHTP1FRFP67A4J",

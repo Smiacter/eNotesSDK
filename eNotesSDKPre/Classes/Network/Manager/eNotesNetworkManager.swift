@@ -83,15 +83,13 @@ extension eNotesNetworkManager {
         }
     }
     
-    // NO USE
-    func subscribeNotification(blockchain: Blockchain, network: Network, txid: String) {
-        guard let cid = UserDefaults.standard.value(forKey: "TODO: GetuiClientIdKey") as? String else {
-            return
-        }
+    /// subscribe Notification
+    /// clientId: Getui Client id
+    func subscribeNotification(blockchain: Blockchain, clientId: String, network: Network, txid: String) {
         
         let request = eNotesArrayPostRequest()
         request.path = "/subscribe_notification"
-        request.anyKey = [["blockchain": blockchain.eNotesString, "network": network.eNotesString, "txid": txid, "event": "txreceipt", "cid": cid]]
+        request.anyKey = [["blockchain": blockchain.eNotesString, "network": network.eNotesString, "txid": txid, "event": "txreceipt", "cid": clientId]]
         eNotesNetwork.request(request) { (response) in
             
         }

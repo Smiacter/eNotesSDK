@@ -53,6 +53,10 @@ public class CardReaderManager: NSObject {
     private var connectId: Int?
     // ABTReader
     private let abtManager = ABTReaderManager()
+    
+    public func getConnectStatus() -> CardConnecetStatus {
+        return abtManager.getConnectStatus()
+    }
 }
 
 // MARK: Observer

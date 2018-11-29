@@ -50,7 +50,7 @@ let TagUnFreezeLeftCount = "95"
 ///
 /// none: everything is ok, on error there
 /// deviceNotFound: no bluetooth or reader device found
-/// absent: card absent status, now card should present on device to continue
+/// absent: card absent when connecting
 /// parsing: card is in apdu parsing
 /// apduReaderError: apdu command read error
 /// apduVersionTooLow: version of the apdu protocol is too low
@@ -59,6 +59,7 @@ public enum CardReaderError {
     case none
     case deviceNotFound
     case absent
+    case absentLimit
     case parsing
     case apduReaderError
     case apduVersionTooLow
@@ -128,4 +129,12 @@ public enum FreezeResult {
     case success
     case wrongFreezePin
     case frozenAlready
+}
+
+public enum CardConnecetStatus {
+    case connected
+    case disconnected
+    case absent
+    case progress
+    case error
 }

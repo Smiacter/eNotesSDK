@@ -1,9 +1,9 @@
 PODS:
-  - Alamofire (4.7.3)
+  - Alamofire (4.8.0)
   - BigInt (3.1.0):
     - SipHash (~> 1.2)
-  - CryptoSwift (0.12.0)
-  - eNotesSDKPre (0.0.1):
+  - CryptoSwift (0.13.0)
+  - eNotesSDKPre (0.1.0):
     - BigInt
     - CryptoSwift
     - SolarNetwork
@@ -27,13 +27,13 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: c7287b6e5d7da964a70935e5db17046b7fde6568
+  Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
   BigInt: 76b5dfdfa3e2e478d4ffdf161aeede5502e2742f
-  CryptoSwift: 1c07ca50843dd48bc54e6ea53d7a4dba3b645716
-  eNotesSDKPre: be524919b9e60afbe69e9f1cdbf40255ff1a6e19
+  CryptoSwift: 16e78bebf567bad1c87b2d58f6547f25b74c31aa
+  eNotesSDKPre: 77daa85a5a832c57c63768342314442ca76c89d3
   SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
   SolarNetwork: fa1ffadca757c17e26b7919a063e438b8ee57dd0
 
-PODFILE CHECKSUM: a8e3d4643bff4d7305ea6ecb828ab24d9bf8aa12
+PODFILE CHECKSUM: cc9953f9d30be42a529b202534f0457970ba6a1a
 
 COCOAPODS: 1.5.3
