@@ -102,7 +102,9 @@ extension CardReaderManager {
     func didBluetoothDisconnect(peripheral: CBPeripheral?) {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothDisconnect(peripheral: peripheral)        }
+            observer.didBluetoothDisconnect(peripheral: peripheral)
+            abtManager.setConnectStatus(status: .disconnected)
+        }
     }
     
     func didBluetoothUpdateState(state: CBManagerState) {
