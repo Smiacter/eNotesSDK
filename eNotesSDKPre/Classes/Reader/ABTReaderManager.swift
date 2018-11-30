@@ -179,7 +179,9 @@ extension ABTReaderManager {
         guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagApduVersion)
         guard let version = tv[tag] else { throwError(error: .apduReaderError); return }
-        guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu, IgnoreVersion else { throwError(error: .apduVersionTooLow); return }
+        if isVerifyVersion {
+            guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu else { throwError(error: .apduVersionTooLow); return }
+        }
         sendApdu(apdu: .publicKey)
     }
     
@@ -210,7 +212,9 @@ extension ABTReaderManager {
     func verifyCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { throwError(error: .apduReaderError); return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
-        guard certParser.version == VersionCertificate, IgnoreVersion else { throwError(error: .apduVersionTooLow); return }
+        if isVerifyVersion {
+            guard certParser.version == VersionCertificate else { throwError(error: .apduVersionTooLow); return }
+        }
         card = certParser.toCard()
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)

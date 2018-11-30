@@ -24,7 +24,7 @@
 //  THE SOFTWARE.
 //
 
-let IgnoreVersion = true
+let isVerifyVersion = false
 
 let VersionCertificate: Int = 1
 let VersionApdu = "1.1.0"
