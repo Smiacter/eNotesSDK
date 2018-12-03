@@ -123,7 +123,7 @@ public class X509Certificate : CustomStringConvertible {
     
     public var contract: String? {
         if let data = subject?.sub(3)?.rawValue {
-            return String(data: data, encoding: .utf8)
+            return data.toHexString()//String(data: data, encoding: .utf8)
         }
         return nil
     }

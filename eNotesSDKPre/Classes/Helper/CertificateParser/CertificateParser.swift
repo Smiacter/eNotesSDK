@@ -70,7 +70,7 @@ class CertificateParser: NSObject {
             deno = decoder!.deno
             blockchain = decoder!.blockchain
             network = decoder!.network
-            contract = decoder!.contract
+            contract = decoder!.contract?.addHexPrefix()
             publicKeyInformation = decoder!.publicKeyInformation
             serialNumber = decoder!.serialNumber
             manufactureBatch = decoder!.manufactureBatch

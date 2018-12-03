@@ -207,6 +207,19 @@ extension ABTReaderManager {
         guard let cert = tv[tag] else { return nil }
         return cert
     }
+    func judgeAndVerifyCertificate(rawApdu: Data) {
+        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
+        cert.append(apdu)
+        if apdu.count < 255 {
+            let tv = Tlv.decode(data: cert)
+            let tag = Data(hex: TagDeviceCertificate)
+            guard let certValue = tv[tag] else { return }
+            cert = certValue
+            verifyCertificate()
+        } else {
+            sendApdu(apdu: .certificate("\(certP1 + 1)"))
+        }
+    }
     
     /// if id is not nil, means you use HTTP Server to simulate NFC Device
     func verifyCertificate(id: Int? = nil) {
@@ -384,14 +397,7 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
             parseFreezeStatus(rawApdu: apdu)
             isParseToSetFrozenStatus ? sendApdu(apdu: .certificate("\(certP1)")) : ()
         case .certificate:
-            if let data = getCertificateData(rawApdu: apdu) {
-                self.cert.append(data)
-                if data.count < 253 {
-                    verifyCertificate()
-                } else { // cert data max length is 253, if bigger than that we should get it several times
-                    sendApdu(apdu: .certificate("\(certP1 + 1)"))
-                }
-            }
+            judgeAndVerifyCertificate(rawApdu: apdu)
         case .verifyDevice:
             verifyDevice(rawApdu: apdu)
             sendApdu(apdu: .verifyBlockchain)

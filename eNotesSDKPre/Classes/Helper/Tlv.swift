@@ -24,6 +24,8 @@
 //  THE SOFTWARE.
 //
 
+import ethers
+
 /// Tag: Value typealias
 public typealias Tv = [Data: Data]
 
@@ -77,24 +79,27 @@ final public class Tlv: NSObject {
         let dataLength = data.count
         var parsed = 0
         while parsed < dataLength {
+            var length: Int = 0
             let tagData = data.subdata(in: parsed..<(parsed+1))
             parsed += 1
-            var length = buffer[parsed] & 0xff
+            let ulength = buffer[parsed] & 0xff
+            length = Int(ulength)
             parsed += 1
-            if length == 0xff {
-                let lengthData = data.subdata(in: parsed..<2)
-                lengthData.copyBytes(to: &length, count: Int(length))
+            if ulength == 0xff {
+                let lengthData = data.subdata(in: parsed..<(parsed+2))
+//                lengthData.copyBytes(to: &ulength, count: lengthData.count)
+                length = BigNumber(hexString: lengthData.toHexString().addHexPrefix())?.integerValue ?? 0
                 parsed += 2
             }
             if length > dataLength {
                 continue
             }
-            if (parsed + Int(length)) > dataLength {
+            if (parsed + length) > dataLength {
                 break
             }
             
-            tv[tagData] = data.subdata(in: parsed..<(parsed+Int(length)))
-            parsed += Int(length)
+            tv[tagData] = data.subdata(in: parsed..<(parsed+length))
+            parsed += length
         }
         
         return tv
