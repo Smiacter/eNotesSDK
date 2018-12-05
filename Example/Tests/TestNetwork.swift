@@ -98,7 +98,7 @@ class TestNetwork: XCTestCase {
     func testGetExchangeRate() {
         let expectate = expectation(description: "eth gas price requst")
         let timeout: TimeInterval = 5
-        NetworkManager.shared.getExchangeRate(blockchain: .bitcoin, contract: nil) { (rates, apiType, error) in
+        NetworkManager.shared.getExchangeRate(blockchain: .bitcoin, isToken: false) { (rates, apiType, error) in
             expectate.fulfill()
             XCTAssert(error == nil)
             XCTAssert(rates != nil)

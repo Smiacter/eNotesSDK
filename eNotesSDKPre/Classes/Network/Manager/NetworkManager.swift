@@ -268,15 +268,15 @@ public extension NetworkManager {
 
 extension NetworkManager {
     
-    public func getExchangeRate(blockchain: Blockchain, contract: String? = nil, closure: exchangeRateClosure) {
-        if contract != nil {
-            getExchangeRate(apiOrder: GusdRateApiOrder, blockchain: blockchain, contract: contract, closure: closure)
+    public func getExchangeRate(blockchain: Blockchain, isToken: Bool = false, closure: exchangeRateClosure) {
+        if isToken {
+            getExchangeRate(apiOrder: GusdRateApiOrder, blockchain: blockchain, isToken: isToken, closure: closure)
         } else {
-            getExchangeRate(apiOrder: DefaultRateApiOrder, blockchain: blockchain, contract: contract, closure: closure)
+            getExchangeRate(apiOrder: DefaultRateApiOrder, blockchain: blockchain, isToken: isToken, closure: closure)
         }
     }
     
-    private func getExchangeRate(apiOrder: [RateApi] = DefaultRateApiOrder, error: NSError? = nil, blockchain: Blockchain, contract: String? = nil, closure: exchangeRateClosure) {
+    private func getExchangeRate(apiOrder: [RateApi] = DefaultRateApiOrder, error: NSError? = nil, blockchain: Blockchain, isToken: Bool = false, closure: exchangeRateClosure) {
         guard apiOrder.count > 0 else { closure?(nil, nil, error); return }
         
         let api = apiOrder[0]
@@ -294,7 +294,7 @@ extension NetworkManager {
                 }
             }
         case .okex:
-            getOkexRate(blockchain: blockchain, contract: contract) { (rate, type, error) in
+            getOkexRate(blockchain: blockchain, isToken: isToken) { (rate, type, error) in
                 guard error == nil else {
                     self.getExchangeRate(apiOrder: leftApis, error: error, blockchain: blockchain, closure: closure)
                     return
@@ -315,7 +315,7 @@ extension NetworkManager {
             }
         case .cryptocompare:
             let request = CryptoCompareRequest()
-            let type = contract != nil ? "GUSD" : "\(blockchain.short)"
+            let type = isToken ? "GUSD" : "\(blockchain.short)"
             request.path = "fsyms=\(type)&tsyms=USD,CNY,EUR,JPY,BTC,ETH,GUSD"
             CryptoCompareNetwork.request(request) { (response) in
                 let error = response.error
@@ -328,7 +328,7 @@ extension NetworkManager {
         }
     }
     
-    private func getOkexRate(blockchain: Blockchain, contract: String?, closure: exchangeRateClosure) {
+    private func getOkexRate(blockchain: Blockchain, isToken: Bool = false, closure: exchangeRateClosure) {
         var gusd2btcRate: Double?
         var eth2btcRate: Double?
         var btc2usdRate: Double?
@@ -377,7 +377,7 @@ extension NetworkManager {
                 return
             }
             /// gusd
-            guard contract == nil else {
+            guard !isToken else {
                 let gusd: Double = 1
                 let btc = gusd2btcRate
                 let eth = gusd2btcRate / eth2btcRate
