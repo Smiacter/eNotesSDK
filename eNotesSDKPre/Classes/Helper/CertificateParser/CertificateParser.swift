@@ -70,13 +70,15 @@ class CertificateParser: NSObject {
             deno = decoder!.deno
             blockchain = decoder!.blockchain
             network = decoder!.network
-            contract = decoder!.contract == nil ? nil : decoder!.contract!.addHexPrefix()
             publicKeyInformation = decoder!.publicKeyInformation
             serialNumber = decoder!.serialNumber
             manufactureBatch = decoder!.manufactureBatch
             manufactureTime = decoder!.manufactureTime
             r = decoder!.r
             s = decoder!.s
+            if let contract = decoder!.contract, !contract.isEmpty {
+                self.contract = contract
+            }
         } catch  {
             return nil
         }
