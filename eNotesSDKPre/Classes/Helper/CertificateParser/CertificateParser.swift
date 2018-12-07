@@ -77,7 +77,7 @@ class CertificateParser: NSObject {
             r = decoder!.r
             s = decoder!.s
             if let contract = decoder!.contract, !contract.isEmpty {
-                self.contract = contract
+                self.contract = contract.addHexPrefix()
             }
         } catch  {
             return nil
@@ -95,9 +95,6 @@ class CertificateParser: NSObject {
         card.blockchain = blockchain == "80000000" ? .bitcoin : .ethereum
         card.network = toNetwork()
         card.contract = contract
-        if let contract = contract, contract.isEmpty {
-            card.contract = nil
-        }
         card.publicKey = publicKeyInformation
         card.serialNumber = serialNumber
         card.manufactureBatch = manufactureBatch
