@@ -64,6 +64,7 @@ let BlockcypherApiKeys = ["e967dba1620441c8ab57d48e88150d87",
 let EthCallToAddress = "0x9A21e2c918026D9420DdDb2357C8205216AdD269"
 let EthCallTestToAddress = "0x5C036d8490127ED26E3A142024082eaEE482BbA2"
 let EthCallTestPrefix = "test-"
+let EthCallDemoPrefix = "demo-"
 /// jsonrpc version
 let JsonRpcVersion = "2.0"
 /// infura post param: id

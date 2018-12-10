@@ -179,8 +179,10 @@ extension ABTReaderManager {
         guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tag = Data(hex: TagApduVersion)
         guard let version = tv[tag] else { throwError(error: .apduReaderError); return }
-        if isVerifyVersion {
-            guard let versionStr = String(data: version, encoding: .utf8), versionStr == VersionApdu else { throwError(error: .apduVersionTooLow); return }
+        guard let versionStr = String(data: version, encoding: .utf8) else { throwError(error: .apduReaderError); return }
+        if versionStr.compare(VersionApdu) == .orderedDescending { // versionStr > VersionApdu
+            throwError(error: .apduVersionTooLow)
+            return
         }
         sendApdu(apdu: .publicKey)
     }
@@ -225,8 +227,9 @@ extension ABTReaderManager {
     func verifyCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { throwError(error: .apduReaderError); return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
-        if isVerifyVersion {
-            guard certParser.version == VersionCertificate else { throwError(error: .apduVersionTooLow); return }
+        if certParser.version > VersionCertificate {
+            throwError(error: .apduVersionTooLow)
+            return
         }
         card = certParser.toCard()
         card.publicKeyData = publicKey
@@ -249,7 +252,8 @@ extension ABTReaderManager {
         }
         
         let data = AbiParser.encodePublicKeyData(issuer: card.issuer.uppercased(), batch: card.manufactureBatch)
-        let network: Network = card.serialNumber.lowercased().hasPrefix(EthCallTestPrefix) ? .kovan : .ethereum
+        let isTestOrDemo = card.serialNumber.lowercased().hasPrefix(EthCallTestPrefix) || card.serialNumber.lowercased().hasPrefix(EthCallDemoPrefix)
+        let network: Network = isTestOrDemo ? .kovan : .ethereum
         NetworkManager.shared.call(network: network, toAddress: network.contractAddress, data: data) { [weak self] (result, error) in
             guard error == nil else { self?.throwError(error: .apduReaderError); return }
             let publicKey = AbiParser.decodePublicKeyData(result: result)
