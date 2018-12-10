@@ -392,7 +392,7 @@ extension CardReaderManager {
 
 // MARK: Freeze PIN
 
-public typealias freezeStatusClosure = ((Bool) -> ())?
+public typealias freezeStatusClosure = ((Bool?) -> ())?
 public typealias unfreezeLeftCountClosure = ((Int) -> ())?
 public typealias freezeResultClosure = ((FreezeResult) -> ())?
 extension CardReaderManager {

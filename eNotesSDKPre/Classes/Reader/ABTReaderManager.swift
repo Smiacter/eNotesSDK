@@ -32,7 +32,7 @@ class ABTReaderManager: NSObject {
     var manager = ABTBluetoothReaderManager()
     var reader : ABTBluetoothReader!
     var signPrivateKeyClosure: ((String) -> ())?
-    var freezeStatusClosure: ((Bool) -> ())?
+    var freezeStatusClosure: ((Bool?) -> ())?
     var unfreezeLeftCountClosure: ((Int) -> ())?
     var freezeResultClosure: ((FreezeResult) -> ())?
     
@@ -42,7 +42,7 @@ class ABTReaderManager: NSObject {
     private var random = ""
     private var publicKey: Data?
     private var status = ""
-    private var isFrozen = false
+    private var isFrozen: Bool?
     private var isParseToSetFrozenStatus = true
     private var certP1 = 0
     private var cert = Data()
@@ -304,7 +304,7 @@ extension ABTReaderManager {
     func parseFreezeStatus(rawApdu: Data) {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagFreezeStatus)
-        guard let statusData = tv[tag], let freezeStatus = BTCHexFromData(statusData) else { return }
+        guard let statusData = tv[tag], let freezeStatus = BTCHexFromData(statusData) else { freezeStatusClosure?(nil); return }
         isFrozen = freezeStatus != "00"
         freezeStatusClosure?(isFrozen)
     }

@@ -43,6 +43,10 @@ class DetailTableViewController: UITableViewController {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd/MM/yyyy"
         productionDateLabel.text = formatter.string(from: card.manufactureTime)
+        
+        if card.isFrozen == nil {
+            Alert.show(msg: "Pin Not Support", title: "TIP")
+        }
     }
     
     func getBalance() {
