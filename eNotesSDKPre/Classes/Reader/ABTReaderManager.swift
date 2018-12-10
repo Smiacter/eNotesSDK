@@ -302,6 +302,7 @@ extension ABTReaderManager {
     }
     
     func parseFreezeStatus(rawApdu: Data) {
+        isFrozen = nil
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagFreezeStatus)
         guard let statusData = tv[tag], let freezeStatus = BTCHexFromData(statusData) else { freezeStatusClosure?(nil); return }
