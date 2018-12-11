@@ -268,7 +268,7 @@ extension BtcNetworkManager {
         switch api {
         case .blockcypher:
             let request = BlockcypherTxsRequest()
-            request.path = "/\(network.network(api: api))/addrs/\(address)?token=\(BlockcypherApiKeys.random())&limit=50"
+            request.path = "/\(network.network(api: api))/addrs/\(address)?token=\(BlockcypherApiKeys.random())&limit=51"
             BlockcypherNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockcypherTxsRaw.self) {
@@ -279,7 +279,7 @@ extension BtcNetworkManager {
             }
         case .blockexplorer:
             let request = BlockexplorerTxsRequest()
-            request.path = "\(network.network(api: api))blockexplorer.com/api/addrs/\(address)/txs/?from=0&to=50"
+            request.path = "\(network.network(api: api))blockexplorer.com/api/addrs/\(address)/txs/?from=0&to=51"
             BlockexplorerNetwork.request(request) { (response) in
                 let error = response.error
                 if let model = response.decode(to: BlockexplorerTxsRaw.self) {

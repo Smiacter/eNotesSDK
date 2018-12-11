@@ -314,9 +314,9 @@ extension EthNetworkManager {
     func getTransactionHistory(network: Network, address: String, contract: String?, closure: txsClosure) {
         var path = ""
         if contract == nil {
-            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=txlist&address=\(address)&page=1&offset=50&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
+            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=txlist&address=\(address)&page=1&offset=51&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
         } else {
-            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=tokentx&contractaddress=\(contract!)&address=\(address)&page=1&offset=50&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
+            path = "\(network.network(api: .etherscan)).etherscan.io/api?module=account&action=tokentx&contractaddress=\(contract!)&address=\(address)&page=1&offset=51&sort=desc&apikey=\(NetworkManager.shared.apiKeyConfig.etherscanApiKeys.random())"
         }
         
         let request = EtherscanTxsRequest()

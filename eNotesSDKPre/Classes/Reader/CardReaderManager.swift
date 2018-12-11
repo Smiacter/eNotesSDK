@@ -218,7 +218,7 @@ extension CardReaderManager: CBCentralManagerDelegate {
         if error != nil {
             
         } else {
-            stopBluetoothScan()
+            startBluetoothScan()
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
                 self.stopBluetoothScan()
             }

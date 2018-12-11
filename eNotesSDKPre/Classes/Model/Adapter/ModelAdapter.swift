@@ -188,7 +188,7 @@ extension Decodable {
                 th.txid = tx.hash
                 th.confirmations = Int(tx.confirmations) ?? 0
                 th.value = Int64(tx.value) ?? 0
-                th.isSender = tx.from == address
+                th.isSender = tx.from.lowercased() == address.lowercased()
                 return th
             })
         }
