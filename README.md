@@ -1,4 +1,4 @@
-# eNotesSDKPre
+# eNotesSDK
 
 [![Version](https://img.shields.io/cocoapods/v/eNotesSDKPre.svg?style=flat)](https://cocoapods.org/pods/eNotesSDKPre)
 [![License](https://img.shields.io/cocoapods/l/eNotesSDKPre.svg?style=flat)](https://cocoapods.org/pods/eNotesSDKPre)
@@ -21,7 +21,7 @@ Easy way to verify and manage your eNotes.
 
 ## Description
 
-The eNotesSDKPre is a Swift implementation of the verify and manage your eNotes through this app with  smarphones and bluetooth NFC reader which is sold separately.
+The eNotesSDK is a Swift implementation of the verify and manage your eNotes through this app with  smarphones and bluetooth NFC reader which is sold separately.
 
 ## Features
 
@@ -48,7 +48,7 @@ The eNotesSDKPre is a Swift implementation of the verify and manage your eNotes 
 
 ### CocoaPods
 
-eNotesSDKPre is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your `Podfile`:
+eNotesSDK is available through [CocoaPods](https://cocoapods.org). To install it, simply add the following line to your `Podfile`:
 
 ```ruby
 pod 'eNotesSDKPre'
