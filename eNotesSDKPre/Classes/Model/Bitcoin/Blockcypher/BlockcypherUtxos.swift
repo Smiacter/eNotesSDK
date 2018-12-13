@@ -26,13 +26,14 @@
 
 struct BlockcypherUtxosRaw: Decodable {
     /// confirmed
-    var txrefs: [BlockcypherUtxosConfirmed]
+    var txrefs: [BlockcypherUtxosConfirmed]?
     /// unconfirmed
-//    var unconfirmed_txrefs: [BlockcypherUtxosUnConfirmed]
+    var unconfirmed_txrefs: [BlockcypherUtxosUnConfirmed]?
     
     func toUtxoModels() -> [UtxoModel] {
+        guard txrefs != nil else { return [] }
         var utxos = [UtxoModel]()
-        for utxo in txrefs {
+        for utxo in txrefs! {
             var utxoModel = UtxoModel()
             utxoModel.txid = utxo.tx_hash
             utxoModel.index = UInt32(utxo.tx_output_n)

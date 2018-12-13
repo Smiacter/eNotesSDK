@@ -40,7 +40,7 @@ struct BlockexplorerUtxos: Decodable {
         utxoModel.index = UInt32(vout)
         utxoModel.script = scriptPubKey
         utxoModel.value = BTCAmount(satoshis)
-        utxoModel.confirmations = UInt(confirmations)
+        utxoModel.confirmations = UInt(confirmations < 0 ? 0 : confirmations)
         
         return utxoModel
     }
