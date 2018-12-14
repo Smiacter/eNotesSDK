@@ -43,7 +43,7 @@ class CertificateParser: NSObject {
     /// face value
     private var deno: Int = -1
     /// cornType, btc:80000000 eth:8000003c
-    private var blockchain = ""
+    private(set) var blockchain = ""
     /// network, MainBtc:0 TestBtc:1 Ethereum:1 EthereumRopsten:3 EthereumRinkeby:4 EthereumKovan:42
     private var network: Int = -1
     /// contract address of ERC20 token

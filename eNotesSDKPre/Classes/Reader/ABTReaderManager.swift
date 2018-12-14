@@ -231,6 +231,10 @@ extension ABTReaderManager {
             throwError(error: .apduVersionTooLow)
             return
         }
+        guard certParser.blockchain == "80000000" || certParser.blockchain == "8000003c" else {
+            throwError(error: .apduVersionTooLow)
+            return
+        }
         card = certParser.toCard()
         card.publicKeyData = publicKey
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)
@@ -289,6 +293,7 @@ extension ABTReaderManager {
         }
         // card read flow over
         connectStatus = .connected
+        absentCount = 0
         CardReaderManager.shared.didCardRead(card: card, error: nil)
     }
     
