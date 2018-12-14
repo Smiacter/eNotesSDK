@@ -105,7 +105,7 @@ public enum Blockchain: Int {
     }
     
     /// short value
-    var short: String {
+    public var short: String {
         switch self {
         case .bitcoin:
             return "BTC"
@@ -123,7 +123,7 @@ public enum Network: Int {
     case ropsten
     case rinkeby
     
-    var isBitcoin: Bool {
+    public var isBitcoin: Bool {
         switch self {
         case .mainnet, .testnet:
             return true
