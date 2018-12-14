@@ -231,7 +231,7 @@ extension ABTReaderManager {
             throwError(error: .apduVersionTooLow)
             return
         }
-        guard certParser.blockchain == "80000000" || certParser.blockchain == "8000003c" else {
+        guard certParser.blockchain == "80000000" || certParser.blockchain.lowercased() == "8000003c" else {
             throwError(error: .apduVersionTooLow)
             return
         }
