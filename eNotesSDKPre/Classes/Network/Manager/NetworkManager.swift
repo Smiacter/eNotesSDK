@@ -29,7 +29,7 @@ import Alamofire
 
 /// Balance callabck, String: hex string balance, NSError?: network or decode error
 public typealias balanceClosure = ((String, NSError?) -> ())?
-public typealias multBalanceClosure = (([String]?, NSError?) -> ())?
+public typealias multBalanceClosure = (([MultiBalance]?, NSError?) -> ())?
 /// Transaction Receipt callback, ConfirmStatus: receipt status, NSError?: network or decode error
 public typealias txReceiptClosure = ((ConfirmStatus, NSError?) -> ())?
 /// TxId callback when send raw transaction success, String: txid, NSError?: network or decode error

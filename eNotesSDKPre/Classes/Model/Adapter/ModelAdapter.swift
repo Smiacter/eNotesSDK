@@ -83,11 +83,11 @@ extension Decodable {
         
         return ""
     }
-    func toMultBalance() -> [String]? {
+    func toMultBalance() -> [MultiBalance]? {
         if let model = self as? EtherscanMultBalanceRaw {
-            return model.result.map { return $0.balance.strToHex() }
+            return model.result.map { return MultiBalance(address: $0.account, balance: $0.balance.strToHex()) }
         } else if let model = self as? BlockchainMultBalanceRaw {
-            return model.addresses.map { return BigNumber(integer: $0.final_balance)?.hexString ?? "0x0" }
+            return model.addresses.map { return MultiBalance(address: $0.address, balance: BigNumber(integer: $0.final_balance)?.hexString ?? "0x0") }
         }
         
         return nil

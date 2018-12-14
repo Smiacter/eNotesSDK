@@ -55,3 +55,13 @@ public struct TransactionHistory {
     /// sender or receiver
     public var isSender: Bool = true
 }
+
+public struct MultiBalance {
+    public var address: String = ""
+    public var balance: String = ""
+    
+    public init(address: String, balance: String) {
+        self.address = address
+        self.balance = balance
+    }
+}
