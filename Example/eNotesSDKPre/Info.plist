@@ -49,5 +49,9 @@
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
+    <key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
+    <array>
+        <string>654E6F7465734170706C6574</string>
+    </array>
 </dict>
 </plist>
