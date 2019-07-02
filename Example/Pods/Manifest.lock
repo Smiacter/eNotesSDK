@@ -1,14 +1,12 @@
 PODS:
-  - Alamofire (4.8.0)
-  - BigInt (3.1.0):
-    - SipHash (~> 1.2)
-  - CryptoSwift (0.13.0)
-  - eNotesSDKPre (0.1.0):
+  - Alamofire (4.8.2)
+  - BigInt (4.0.0)
+  - CryptoSwift (1.0.0)
+  - eNotesSDKPre (0.2.8):
     - BigInt
     - CryptoSwift
     - SolarNetwork
-  - SipHash (1.2.2)
-  - SolarNetwork (1.0.9):
+  - SolarNetwork (1.2.0):
     - Alamofire
 
 DEPENDENCIES:
@@ -19,7 +17,6 @@ SPEC REPOS:
     - Alamofire
     - BigInt
     - CryptoSwift
-    - SipHash
     - SolarNetwork
 
 EXTERNAL SOURCES:
@@ -27,13 +24,12 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  Alamofire: 3ec537f71edc9804815215393ae2b1a8ea33a844
-  BigInt: 76b5dfdfa3e2e478d4ffdf161aeede5502e2742f
-  CryptoSwift: 16e78bebf567bad1c87b2d58f6547f25b74c31aa
-  eNotesSDKPre: 77daa85a5a832c57c63768342314442ca76c89d3
-  SipHash: fad90a4683e420c52ef28063063dbbce248ea6d4
-  SolarNetwork: fa1ffadca757c17e26b7919a063e438b8ee57dd0
+  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  BigInt: 2aad1a9942dc932ec8b84290d2c564a3d76f97ab
+  CryptoSwift: d81eeaa59dc5a8d03720fe919a6fd07b51f7439f
+  eNotesSDKPre: 2b88d43c9168e6abbeec13116103842eed478b6c
+  SolarNetwork: f04b0094e0150b79f2b208a5367a374505ed70b9
 
-PODFILE CHECKSUM: cc9953f9d30be42a529b202534f0457970ba6a1a
+PODFILE CHECKSUM: d33e571b64a8bfbc3027225043fe788fc6faf2d5
 
 COCOAPODS: 1.5.3

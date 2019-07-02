@@ -62,8 +62,12 @@ class CertificateParser: NSObject {
             guard decoder != nil else {
                 return
             }
+            guard decoder!.tbsCertificate != nil else {
+                return
+            }
             tbsCertificateAndSig=decoder!.tbsCertificateData
-            tbsCertificate=decoder!.tbsCertificate.rawValue
+            tbsCertificate=decoder!.tbsCertificate!.rawValue
+            
             version = decoder!.version
             issuer = decoder!.issuer
             issueTime = decoder!.issueTime

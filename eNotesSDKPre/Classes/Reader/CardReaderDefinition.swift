@@ -25,7 +25,7 @@
 //
 
 let VersionCertificate: Int = 1
-let VersionApdu = "1.1.0"
+let VersionApdu = "1.2.0"
 
 /// NFC device master key, used to authenticate the deivce
 let MasterKey = "41435231323535552D4A312041757468"

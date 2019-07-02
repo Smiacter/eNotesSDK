@@ -53,5 +53,7 @@
     <array>
         <string>654E6F7465734170706C6574</string>
     </array>
+    <key>NFCReaderUsageDescription</key>
+    <string>use NFC to read card</string>
 </dict>
 </plist>

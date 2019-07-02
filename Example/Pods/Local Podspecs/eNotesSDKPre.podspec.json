@@ -1,6 +1,6 @@
 {
   "name": "eNotesSDKPre",
-  "version": "0.1.0",
+  "version": "0.2.8",
   "summary": "eNotes, a negotiable private key",
   "description": "eNotesSDK, provide an esay way to use blockchain",
   "homepage": "https://github.com/Smiacter/eNotesSDKPre",
@@ -13,10 +13,10 @@
   },
   "source": {
     "git": "https://github.com/Smiacter/eNotesSDKPre.git",
-    "tag": "0.1.0"
+    "tag": "0.2.8"
   },
   "platforms": {
-    "ios": "10.0"
+    "ios": "13.0"
   },
   "swift_version": "4.2",
   "source_files": [

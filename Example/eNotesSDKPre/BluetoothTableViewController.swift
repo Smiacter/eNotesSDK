@@ -41,8 +41,9 @@ class BluetoothTableViewController: UITableViewController {
         }
     }
     
+    /// 点击打开NFC读卡
     @IBAction func scanBluetoothAction(_ sender: Any) {
-        CardReaderManager.shared.startBluetoothScan()
+        CardReaderManager.shared.scanNFC()
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -105,7 +106,9 @@ extension BluetoothTableViewController: CardReaderObserver {
             return
         }
         guard card != nil else { return }
-        guard let curVC = UIViewController.current(), curVC.isKind(of: BluetoothTableViewController.self) else { return }
-        performSegue(withIdentifier: "DetailSegue", sender: card!)
+        DispatchQueue.main.async {
+            guard let curVC = UIViewController.current(), curVC.isKind(of: BluetoothTableViewController.self) else { return }
+            self.performSegue(withIdentifier: "DetailSegue", sender: card!)
+        }
     }
 }

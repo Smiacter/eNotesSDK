@@ -27,6 +27,7 @@
 import UIKit
 import CoreBluetooth
 import ethers
+import CoreNFC
 
 public class CardReaderManager: NSObject {
     
@@ -56,6 +57,62 @@ public class CardReaderManager: NSObject {
     
     public func getConnectStatus() -> CardConnecetStatus {
         return abtManager.getConnectStatus()
+    }
+    
+    
+    // MARK: NFC
+    private var nfcTagReaderSession: NFCTagReaderSession?
+}
+
+// MARK: NFC Reader - add at 2019.07.01
+extension CardReaderManager: NFCTagReaderSessionDelegate {
+    
+    // MARK: NFC Method
+    
+    /// 唤起NFC扫描
+    public func scanNFC() {
+        nfcTagReaderSession = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self)
+        nfcTagReaderSession?.alertMessage = "Place the device on the innercover of the passport"
+        nfcTagReaderSession?.begin()
+    }
+    
+    private func apduHanding(tag: NFCISO7816Tag) {
+        let aidData = Data(hex: "00CA0055") // version：00CA0012， AID：00A404000C654e6f7465734170706c6574
+        guard let apdu1 = NFCISO7816APDU(data: aidData) else { return }
+        tag.sendCommand(apdu: apdu1) { (data, _, _, error) in
+            print(data)
+            print(error.debugDescription)
+        }
+    }
+    
+    // MARK: NFCTagReaderSessionDelegate
+    
+    public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
+        print("tagReaderSessionDidBecomeActive")
+    }
+    
+    public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
+        print("tagReaderSession didInvalidateWithError")
+        print(error)
+    }
+    
+    public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
+        for tag in tags {
+            print(tag.isAvailable)
+            switch tag {
+            case .iso7816(let tag7816):
+                session.connect(to: tag) { (error) in
+                    guard error == nil else { return }
+                    guard !tag7816.initialSelectedAID.isEmpty else { return }
+                    print(tag7816.initialSelectedAID)
+//                    self.apduHanding(tag: tag7816)
+                    self.abtManager.nfcTag = tag7816
+                    self.abtManager.apduHanding()
+                }
+            default:
+                ()
+            }
+        }
     }
 }
 

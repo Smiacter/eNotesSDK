@@ -27,8 +27,10 @@
 import UIKit
 import CoreBluetooth
 import ethers
+import CoreNFC
 
 class ABTReaderManager: NSObject {
+    var nfcTag: NFCISO7816Tag!
     var manager = ABTBluetoothReaderManager()
     var reader : ABTBluetoothReader!
     var signPrivateKeyClosure: ((String) -> ())?
@@ -147,7 +149,40 @@ extension ABTReaderManager {
             apduData = Data(hex: apdu.value)
         }
         
-        reader.transmitApdu(apduData)
+//        reader.transmitApdu(apduData)
+        
+        guard let data = apduData else { return }
+        guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+            guard error == nil else { return }
+            switch self.apdu {
+            case .publicKey:
+                self.savePublicKey(rawApdu: data)
+                self.sendApdu(apdu: .cardStatus)
+            case .cardStatus:
+                self.saveCardStatus(rawApdu: data)
+                self.sendApdu(apdu: .freezeStatus)
+            case .freezeStatus:
+                self.parseFreezeStatus(rawApdu: data)
+                self.isParseToSetFrozenStatus ? self.sendApdu(apdu: .certificate("\(self.certP1)")) : ()
+            case .certificate:
+                self.judgeAndVerifyCertificate(rawApdu: data)
+            case .verifyDevice:
+                self.verifyDevice(rawApdu: data)
+                self.sendApdu(apdu: .verifyBlockchain)
+            case .verifyBlockchain:
+                self.verifyBlockchain(rawApdu: data)
+            case .signPrivateKey:
+                self.signPrivateKey(rawApdu: data)
+            case .unfreezeLeftCount:
+                self.parseUnFreezeLeftCount(rawApdu: data)
+            case .freeze:
+                self.parseFreeze(rawApdu: data)
+            case .unfreeze:
+                self.parseFreeze(rawApdu: data)
+            default: break
+            }
+        }
     }
     
     /// Get apdu data, for type verifyDevice, verifyBlockchain
@@ -167,11 +202,13 @@ extension ABTReaderManager {
         return nil
     }
     
+    /// 通过NFC读取，没有末尾的9000，直接解析即可
     func getTv(rawApdu: Data) -> Tv? {
-        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else {
-            return nil
-        }
-        return Tlv.decode(data: apdu)
+//        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else {
+//            return nil
+//        }
+        
+        return Tlv.decode(data: rawApdu)
     }
     
     /// verify apdu version
@@ -210,9 +247,9 @@ extension ABTReaderManager {
         return cert
     }
     func judgeAndVerifyCertificate(rawApdu: Data) {
-        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
-        cert.append(apdu)
-        if apdu.count < 255 {
+//        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
+        cert.append(rawApdu)
+        if rawApdu.count < 255 {
             let tv = Tlv.decode(data: cert)
             let tag = Data(hex: TagDeviceCertificate)
             guard let certValue = tv[tag] else { return }
@@ -422,6 +459,21 @@ extension ABTReaderManager: ABTBluetoothReaderDelegate {
         case .unfreeze:
             parseFreeze(rawApdu: apdu)
         case .none:break
+        }
+    }
+}
+
+// MARK: NFC Reader
+extension ABTReaderManager {
+    
+    /// 默认第一个命令为version命令，其他的在验证后继续发送
+    public func apduHanding() {
+        
+        let apduData = Data(hex: Apdu.version.value)
+        guard let apdu7816 = NFCISO7816APDU(data: apduData) else { return }
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+            guard error == nil else { return }
+            self.verifyApduVersion(rawApdu: data)
         }
     }
 }
