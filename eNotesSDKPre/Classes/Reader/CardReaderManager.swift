@@ -42,26 +42,15 @@ public class CardReaderManager: NSObject {
     public var serverIp = ""
     // Observer
     private var observations = [ObjectIdentifier: Observation]()
-    // Bluetooth
-    private var _centralManager: CBCentralManager?
-    private var peripheral: CBPeripheral?
-    private var peripherals = [CBPeripheral]() {
-        didSet { didDiscoverPeripherals() }
-    }
+    /// Http mock
     private var devices = [ServerBluetoothDevice]() {
         didSet { didDiscoverDevices() }
     }
     private var connectId: Int?
-    // ABTReader
-    private let abtManager = ABTReaderManager()
     
-    public func getConnectStatus() -> CardConnecetStatus {
-        return abtManager.getConnectStatus()
-    }
-    
-    
-    // MARK: NFC
+    // NFC
     private var nfcTagReaderSession: NFCTagReaderSession?
+    private var abtManager = ABTReaderManager()
 }
 
 // MARK: NFC Reader - add at 2019.07.01
@@ -71,6 +60,9 @@ extension CardReaderManager: NFCTagReaderSessionDelegate {
     
     /// 唤起NFC扫描
     public func scanNFC() {
+        // 使用局域网模拟
+        guard !useServerSimulate else { getBluetoothDeviceList(); return }
+        
         nfcTagReaderSession = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self)
         nfcTagReaderSession?.alertMessage = "Place the device on the innercover of the passport"
         nfcTagReaderSession?.begin()
@@ -135,13 +127,7 @@ extension CardReaderManager {
         observations.removeValue(forKey: id)
     }
     
-    func didDiscoverPeripherals() {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didDiscover(peripherals: peripherals)
-        }
-    }
-    
+    /// Http mock
     func didDiscoverDevices() {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
@@ -149,136 +135,10 @@ extension CardReaderManager {
         }
     }
     
-    func didBluetoothConnected(peripheral: CBPeripheral) {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothConnected(peripheral: peripheral)
-        }
-    }
-    
-    func didBluetoothDisconnect(peripheral: CBPeripheral?) {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothDisconnect(peripheral: peripheral)
-            abtManager.setConnectStatus(status: .disconnected)
-        }
-    }
-    
-    func didBluetoothUpdateState(state: CBManagerState) {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didBluetoothUpdateState(state: state)
-        }
-    }
-    
     func didCardRead(card: Card?, error: CardReaderError?) {
         for (id, observation) in observations {
             guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
             observer.didCardRead(card: card, error: error)
-        }
-    }
-    
-    func didCardPresent() {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didCardPresent()
-        }
-    }
-    
-    func didCardAbsent() {
-        for (id, observation) in observations {
-            guard let observer = observation.observer else { observations.removeValue(forKey: id); continue }
-            observer.didCardAbsent()
-        }
-    }
-}
-
-// MARK: Bluetooth
-
-extension CardReaderManager {
-    
-    func centralManager() -> CBCentralManager {
-        if _centralManager == nil {
-            _centralManager = CBCentralManager(delegate: self, queue: nil)
-        }
-
-        return _centralManager!
-    }
-    
-    func detectReader(with peripheral: CBPeripheral) {
-        abtManager.detectReader(with: peripheral)
-    }
-    
-    /// Start Bluetooth scan, you can get result through 'didDiscoverPeripherals' in CardReaderObserver protocol
-    public func startBluetoothScan() {
-        guard !useServerSimulate else { getBluetoothDeviceList(); return }
-        
-        // clear peripherals first
-        peripherals.removeAll()
-        
-        // if peripheral connected, we must disconnect it first, otherwise we can't get any scan result
-        if peripheral != nil {
-            disconnectBluetooth(peripheral: peripheral!)
-        } else {
-            centralManager().scanForPeripherals(withServices: nil, options: nil)
-        }
-    }
-    
-    /// Stop the Bluetooth scan, scan will always listening
-    public func stopBluetoothScan() {
-        centralManager().stopScan()
-    }
-    
-    /// Connect a NFC Bluetooth device peripheral
-    /// It will call 'didBluetoothConnected' if success
-    public func connectBluetooth(peripheral: CBPeripheral) {
-        centralManager().connect(peripheral, options: nil)
-    }
-    
-    public func connectBluetooth(address: String) {
-        connectBluetoothDevice(address: address)
-    }
-    
-    /// Bluetooth disconnected with peripheral (the NFC Bluetooth device)
-    public func disconnectBluetooth(peripheral: CBPeripheral) {
-        centralManager().cancelPeripheralConnection(peripheral)
-    }
-}
-
-extension CardReaderManager: CBCentralManagerDelegate {
-    
-    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        didBluetoothUpdateState(state: central.state)
-    }
-    
-    public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if let name = peripheral.name, name.hasPrefix("ACR"), peripherals.index(of: peripheral) == nil {
-            peripherals.append(peripheral)
-        }
-    }
-    
-    public  func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        self.peripheral = peripheral
-        detectReader(with: peripheral)
-        didBluetoothConnected(peripheral: peripheral)
-    }
-    
-    public  func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        
-    }
-    
-    public  func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        if self.peripheral != nil {
-            self.peripheral = nil
-        }
-        didBluetoothDisconnect(peripheral: peripheral)
-        if error != nil {
-            
-        } else {
-            startBluetoothScan()
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) {
-                self.stopBluetoothScan()
-            }
         }
     }
 }

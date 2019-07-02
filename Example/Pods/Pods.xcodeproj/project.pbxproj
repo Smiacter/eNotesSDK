@@ -515,7 +515,7 @@
 		0B759F960535E2C4A41E77A061E95CE7 /* CryptoSwift-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "CryptoSwift-dummy.m"; sourceTree = "<group>"; };
 		0BBEA46F87A1FDB3D7DBAEFB151C33B0 /* Pods-eNotesSDKPre_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-eNotesSDKPre_Example.release.xcconfig"; sourceTree = "<group>"; };
 		0C682DA9D7602A7055BA3E27596B1E78 /* BlockchainBalanceRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockchainBalanceRequest.swift; sourceTree = "<group>"; };
-		0C7CB5348532BC359CF60E9B044732B9 /* BigInt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = BigInt.framework; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C7CB5348532BC359CF60E9B044732B9 /* BigInt.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BigInt.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DD2B1A39D1CA403509715F3FA8A0AD2 /* Hashable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Hashable.swift; path = Sources/Hashable.swift; sourceTree = "<group>"; };
 		0DF0B5B930BFF10016A909CCD20CCE86 /* EtherscanTxs.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EtherscanTxs.swift; sourceTree = "<group>"; };
 		0E352E7D9E8073C2694DE42CA56FDF81 /* BTCUnitsAndLimits.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = BTCUnitsAndLimits.h; sourceTree = "<group>"; };
@@ -525,7 +525,7 @@
 		0F4A2F53703AD88671A775C4F904B0D9 /* NSData+BTCData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NSData+BTCData.h"; sourceTree = "<group>"; };
 		0F9942AE9C37D5B2769F9732C7D0FFC1 /* Exponentiation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Exponentiation.swift; path = Sources/Exponentiation.swift; sourceTree = "<group>"; };
 		105F0F6F7C3AB2EA17880E58B923EB55 /* rc4.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = rc4.h; sourceTree = "<group>"; };
-		10F606013C2CC24882618EB645A019CF /* SolarNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SolarNetwork.framework; path = SolarNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		10F606013C2CC24882618EB645A019CF /* SolarNetwork.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SolarNetwork.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		119AC9400A7544245F868CA35F7E829C /* BlockcypherBalance.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockcypherBalance.swift; sourceTree = "<group>"; };
 		123DD428AD4606FF53FEE18B81112934 /* Integer Conversion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Integer Conversion.swift"; path = "Sources/Integer Conversion.swift"; sourceTree = "<group>"; };
 		126F5F4755A37FE43AC981B54B3AD9B0 /* BTCScriptMachine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = BTCScriptMachine.h; sourceTree = "<group>"; };
@@ -557,7 +557,7 @@
 		1D7997BF5734B4E83530ED5E4BA7DFC8 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1E37B44DE8E9A9E1670457D5252BC666 /* ABTReaderManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ABTReaderManager.swift; sourceTree = "<group>"; };
 		1E8DCF48AA016363C1B88994A0003997 /* ServerConnectBluetoothRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServerConnectBluetoothRequest.swift; sourceTree = "<group>"; };
-		20446549D6F2AD93D11C6193E47FF774 /* Pods_eNotesSDKPre_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_eNotesSDKPre_Tests.framework; path = "Pods-eNotesSDKPre_Tests.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		20446549D6F2AD93D11C6193E47FF774 /* Pods_eNotesSDKPre_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eNotesSDKPre_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		214BA119C0C5A700D5FFCA572FC020DC /* ResponseSerialization.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ResponseSerialization.swift; path = Source/ResponseSerialization.swift; sourceTree = "<group>"; };
 		21EE8482E85DF3BA7A490F10001AE1DB /* ts.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = ts.h; sourceTree = "<group>"; };
 		22EEE4001E82CAF27D6684FDF79B76CC /* Pods-eNotesSDKPre_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-eNotesSDKPre_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -579,7 +579,7 @@
 		2FB42CB67ABD1B2CB8A1EFB93DE5C2CF /* BTCBigNumber.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = BTCBigNumber.h; sourceTree = "<group>"; };
 		3050C5C43FA17B53D26F18B0460F588E /* Poly1305.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Poly1305.swift; path = Sources/CryptoSwift/Poly1305.swift; sourceTree = "<group>"; };
 		3062D6A78BE6D69E552BBB3C0620B278 /* Comparable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Comparable.swift; path = Sources/Comparable.swift; sourceTree = "<group>"; };
-		30BFEC490920342504D123F7368A19BD /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		30BFEC490920342504D123F7368A19BD /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		30C0AED13133DC30EC5F6DCF3F6A75E7 /* EtherchainGasPrice.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EtherchainGasPrice.swift; sourceTree = "<group>"; };
 		3146C333552F1322F2DFD4E1BF260C60 /* OkexTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OkexTarget.swift; sourceTree = "<group>"; };
 		31A51738E6065D6C34DCE64F73D3BB6D /* InfuraGasPriceRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InfuraGasPriceRequest.swift; sourceTree = "<group>"; };
@@ -709,7 +709,7 @@
 		79AE6162BA7FD77B7BBB6ED0557A3CFB /* eNotesTxReceipt.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = eNotesTxReceipt.swift; sourceTree = "<group>"; };
 		79BC0F56A6D66E21FCF178A2E8E5421B /* BlockexplorerTxsRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockexplorerTxsRequest.swift; sourceTree = "<group>"; };
 		7B3E82EBEEA6B502B208FD9486755E3B /* AEAD.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AEAD.swift; path = Sources/CryptoSwift/AEAD/AEAD.swift; sourceTree = "<group>"; };
-		7B92CEA6CB3B34F075B4C31F45AE5B19 /* eNotesSDKPre.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; path = eNotesSDKPre.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		7B92CEA6CB3B34F075B4C31F45AE5B19 /* eNotesSDKPre.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; path = eNotesSDKPre.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		7BB5BFE49FD1B2D6AD834ECDE21C5BDD /* eNotesArrayPostRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = eNotesArrayPostRequest.swift; sourceTree = "<group>"; };
 		7C6774641153DFF4E78450CB8C2CD764 /* AFError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AFError.swift; path = Source/AFError.swift; sourceTree = "<group>"; };
 		7C696D2A48F5582594CAD25D7C6C9F93 /* UInt64+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UInt64+Extension.swift"; path = "Sources/CryptoSwift/UInt64+Extension.swift"; sourceTree = "<group>"; };
@@ -731,7 +731,7 @@
 		82FAD3322866B733DE6671F5F6C9F9B3 /* x509_vfy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = x509_vfy.h; sourceTree = "<group>"; };
 		833942D21C0C4634869A1FDF59E283E8 /* EtherchainNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EtherchainNetwork.swift; sourceTree = "<group>"; };
 		83528C9850827979E81E0B360FE24B98 /* Blowfish+Foundation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Blowfish+Foundation.swift"; path = "Sources/CryptoSwift/Foundation/Blowfish+Foundation.swift"; sourceTree = "<group>"; };
-		83E6FFBE70B7164878B565CC97D2BFBE /* Pods_eNotesSDKPre_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_eNotesSDKPre_Example.framework; path = "Pods-eNotesSDKPre_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		83E6FFBE70B7164878B565CC97D2BFBE /* Pods_eNotesSDKPre_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_eNotesSDKPre_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		85478EC45EF0AA6E7FFC93304BCC0B7E /* engine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = engine.h; sourceTree = "<group>"; };
 		861C399F541B4F6B7A8EF84B1C2E68B3 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		863BC2CB0CB8AA6C01FBE9ED073DDAAF /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -763,7 +763,7 @@
 		925E489FD8B1AC29D61884DA54A9E7DE /* CardReaderDefinition.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardReaderDefinition.swift; sourceTree = "<group>"; };
 		92DD959C1ADE663F2DE820656C0BB36E /* aes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = aes.h; sourceTree = "<group>"; };
 		92FE5DEE03893530055AA07BE6EE5B38 /* UInt16+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UInt16+Extension.swift"; path = "Sources/CryptoSwift/UInt16+Extension.swift"; sourceTree = "<group>"; };
-		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		94B7222DBACD894D391A206A65A7C920 /* Cryptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Cryptor.swift; path = Sources/CryptoSwift/Cryptor.swift; sourceTree = "<group>"; };
 		957CFF7BEA7B4E99DD14BB5880418D47 /* Pods-eNotesSDKPre_Example-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-eNotesSDKPre_Example-resources.sh"; sourceTree = "<group>"; };
 		9596C4764CFC3972C0316F9630E8DA65 /* BlockexplorerNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BlockexplorerNetwork.swift; sourceTree = "<group>"; };
@@ -778,7 +778,7 @@
 		98F780B67A9F4F6C27A106F3FF051259 /* ParameterEncoding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ParameterEncoding.swift; path = Source/ParameterEncoding.swift; sourceTree = "<group>"; };
 		992EAFF9B536C66359DF178F56CD111C /* StreamEncryptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StreamEncryptor.swift; path = Sources/CryptoSwift/StreamEncryptor.swift; sourceTree = "<group>"; };
 		9A976322E4D81B9C2302C5888421C9DD /* UInt8+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UInt8+Extension.swift"; path = "Sources/CryptoSwift/UInt8+Extension.swift"; sourceTree = "<group>"; };
-		9AFFF12CF1FCAB3C80227973CC7A8610 /* eNotesSDKPre.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = eNotesSDKPre.framework; path = eNotesSDKPre.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9AFFF12CF1FCAB3C80227973CC7A8610 /* eNotesSDKPre.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = eNotesSDKPre.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		9B59A11F1656FE2257B4E901E7BE9165 /* Usd2OtherCurrency.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Usd2OtherCurrency.swift; sourceTree = "<group>"; };
 		9BCE2F668E9686331D10405DD5F28CBB /* Pods-eNotesSDKPre_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-eNotesSDKPre_Tests-dummy.m"; sourceTree = "<group>"; };
 		9C62D8CE5380874FDDE1974E67BF1EA1 /* ASN1Object.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ASN1Object.swift; sourceTree = "<group>"; };
@@ -810,7 +810,7 @@
 		A8F74A4C994DD72BACABB59A6B97418D /* AbiParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AbiParser.swift; sourceTree = "<group>"; };
 		A9466A2549BFB4A1A4CC9681A2AC39E1 /* eNotesSDKPre.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = eNotesSDKPre.xcconfig; sourceTree = "<group>"; };
 		A9B7CA1F396B3E76B87AFE65BFFBE26C /* Timeline.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Timeline.swift; path = Source/Timeline.swift; sourceTree = "<group>"; };
-		AAE822898245B4D22C3E36688CFEA31C /* CryptoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = CryptoSwift.framework; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAE822898245B4D22C3E36688CFEA31C /* CryptoSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CryptoSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB4C2932A66725D0E8F0BC44899C66DC /* sha.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sha.h; sourceTree = "<group>"; };
 		AB551AB9B72895EF7E195ADCEAEBC685 /* BlockEncryptor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BlockEncryptor.swift; path = Sources/CryptoSwift/BlockEncryptor.swift; sourceTree = "<group>"; };
 		ABC6FE8B42AD6D36F90548F8C635EFA5 /* ethers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ethers.framework; path = eNotesSDKPre/Classes/Dependency/Ethers/ethers.framework; sourceTree = "<group>"; };
@@ -870,7 +870,7 @@
 		D5321E72B29CE9B2BA252B2A6E300D65 /* BitcoinFees.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BitcoinFees.swift; sourceTree = "<group>"; };
 		D5680230F0373DD355F63D67E1151E32 /* CardReaderManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CardReaderManager.swift; sourceTree = "<group>"; };
 		D59B1433AB6DC82FCB5717C5D465BA45 /* stack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = stack.h; sourceTree = "<group>"; };
-		D637AFAE2DF7874CF90B2491255448CB /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Alamofire.framework; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D637AFAE2DF7874CF90B2491255448CB /* Alamofire.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Alamofire.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D67829418A2F5D22610C0F2D8FCFFBF2 /* Operators.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Operators.swift; path = Sources/CryptoSwift/Operators.swift; sourceTree = "<group>"; };
 		D7482D9E3CEFAC586349E9D235793D76 /* seed.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = seed.h; sourceTree = "<group>"; };
 		D817394CB88DA81F4FFDF2A8171B9A35 /* UInt32+Extension.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UInt32+Extension.swift"; path = "Sources/CryptoSwift/UInt32+Extension.swift"; sourceTree = "<group>"; };
@@ -893,7 +893,7 @@
 		E3B83A09AB4C4280904DDEA9FD2479D1 /* eNotesEstimateFeeRequest.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = eNotesEstimateFeeRequest.swift; sourceTree = "<group>"; };
 		E42E7E92F4B46B8C822F861E0F37AD1F /* BigInt-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "BigInt-prefix.pch"; sourceTree = "<group>"; };
 		E440416702DCE4ED31A5596706990339 /* asn1_mac.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = asn1_mac.h; sourceTree = "<group>"; };
-		E468A2F350769ADD514F956F71A1A648 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		E468A2F350769ADD514F956F71A1A648 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E4FBF013C6F515AC9028E812BDF34BA9 /* HMAC+Foundation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "HMAC+Foundation.swift"; path = "Sources/CryptoSwift/Foundation/HMAC+Foundation.swift"; sourceTree = "<group>"; };
 		E5887DD727CDCF51472E8141972702B9 /* Alamofire-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Alamofire-dummy.m"; sourceTree = "<group>"; };
 		E80D339B07EB01DC38E70888152CF10A /* ServerNetwork.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ServerNetwork.swift; sourceTree = "<group>"; };
@@ -1007,7 +1007,6 @@
 				B06B26D4D06FD7E86EA90FCC126DA571 /* BlockchainBalance.swift */,
 				6E2EDE272CE4A9ACE2271C9516445815 /* BlockchainUtxos.swift */,
 			);
-			name = Blockchain;
 			path = Blockchain;
 			sourceTree = "<group>";
 		};
@@ -1030,7 +1029,6 @@
 			children = (
 				B8990FB8CFE90AF43BFA7A0A5B74F826 /* BitcoinfeesTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1040,7 +1038,6 @@
 				9E6B3E600472869744398EFCEACCACE5 /* ModelAdapter.swift */,
 				9DF05AD56C53E377687648F7EE7FD662 /* ModelInterface.swift */,
 			);
-			name = Adapter;
 			path = Adapter;
 			sourceTree = "<group>";
 		};
@@ -1054,7 +1051,6 @@
 				79BC0F56A6D66E21FCF178A2E8E5421B /* BlockexplorerTxsRequest.swift */,
 				89E040442BDA78B2C677B3449C35671C /* BlockexplorerUtxosRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1063,7 +1059,6 @@
 			children = (
 				C2D59F430282D35E57D63EE527BFAC45 /* EtherscanTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1074,7 +1069,6 @@
 				77CBCF665D35C5DD0A2492C058D8846D /* Etherscan */,
 				E345448021B46A0274519637D2729788 /* Infura */,
 			);
-			name = Ethereum;
 			path = Ethereum;
 			sourceTree = "<group>";
 		};
@@ -1101,7 +1095,6 @@
 			children = (
 				35CBDCD63CB0D5D048F29F4FAD3D8F4F /* CoinbaseTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1110,7 +1103,6 @@
 			children = (
 				7264CC4077D8CBFCD955022C24DC519D /* Card.swift */,
 			);
-			name = Card;
 			path = Card;
 			sourceTree = "<group>";
 		};
@@ -1121,7 +1113,6 @@
 				D73AF053394B734138CB973C57CC5613 /* Request */,
 				1E1C0B103D0A0E149F5E3E52AFA018C4 /* Target */,
 			);
-			name = Coinbase;
 			path = Coinbase;
 			sourceTree = "<group>";
 		};
@@ -1132,7 +1123,6 @@
 				7F32E023C70A6881097CAA471A49BB90 /* Etherscan */,
 				68DA6601166017D36F849292EBFC9FD3 /* Infura */,
 			);
-			name = Ethereum;
 			path = Ethereum;
 			sourceTree = "<group>";
 		};
@@ -1147,7 +1137,6 @@
 				42FED30106C8B2C5AA97075D750A9DBD /* eNotesNonceRequest.swift */,
 				61670E014665D76C68DD1FF8F9F44A64 /* eNotesUtxosRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1161,7 +1150,6 @@
 				9D529D2F9B4EA849EDEB3E0FC70F740D /* BlockcypherTxsRequest.swift */,
 				902A3A306C3C8723CD22E4C52789C5B2 /* BlockcypherUtxosRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1172,7 +1160,6 @@
 				A2E326EAA05B9F0BDEE33F9FFB126F22 /* Request */,
 				0489A93F9F7422505946D1D2BA91C81A /* Target */,
 			);
-			name = Bitcoinfees;
 			path = Bitcoinfees;
 			sourceTree = "<group>";
 		};
@@ -1201,7 +1188,6 @@
 				A06D68CCF2F41214B064B728AB343208 /* InfuraSendTxRequest.swift */,
 				6970E296FCD341B9E50C29665C04F626 /* InfuraTxReceiptRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1212,7 +1198,6 @@
 				82D4015283A804DCAB669BCA22C1E975 /* Request */,
 				D02842A73ECE999358D2266A7403A734 /* Target */,
 			);
-			name = CryptoCompare;
 			path = CryptoCompare;
 			sourceTree = "<group>";
 		};
@@ -1233,7 +1218,6 @@
 				C25897B75761DC1718D46200661546C8 /* BitcoinHelper.h */,
 				89D53700759A8D5719657C4A2D746CDA /* BitcoinHelper.m */,
 			);
-			name = BtcRawTx;
 			path = BtcRawTx;
 			sourceTree = "<group>";
 		};
@@ -1259,7 +1243,6 @@
 				D065A6AB0A5483F8096293B87F883B6B /* Validation.swift */,
 				4F861F69BB94D39CDF8CAE124533F790 /* Support Files */,
 			);
-			name = Alamofire;
 			path = Alamofire;
 			sourceTree = "<group>";
 		};
@@ -1292,7 +1275,6 @@
 				7A71DE341E8451EEC16D233AF7AD9333 /* Request */,
 				9A008C239C819BE749A71F064526276C /* Target */,
 			);
-			name = Blockchain;
 			path = Blockchain;
 			sourceTree = "<group>";
 		};
@@ -1321,7 +1303,6 @@
 				EA5CFC1E0BA81D4C0F1146347C8B6061 /* NetworkDefinition.swift */,
 				722E24FA05301759E48FD9B90A03C2C1 /* NetworkManager.swift */,
 			);
-			name = Manager;
 			path = Manager;
 			sourceTree = "<group>";
 		};
@@ -1349,7 +1330,6 @@
 				19112151CFC975A9610DF25BA67E08F1 /* Okex.swift */,
 				9B59A11F1656FE2257B4E901E7BE9165 /* Usd2OtherCurrency.swift */,
 			);
-			name = ExchangeRate;
 			path = ExchangeRate;
 			sourceTree = "<group>";
 		};
@@ -1359,7 +1339,6 @@
 				2D6D61EFB5214E1C95A9EB50795D6BEE /* OkexOther2BtcRequest.swift */,
 				2A4BB1E0AAFD836DA05A374359696E76 /* OkexOther2UsdRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1368,7 +1347,6 @@
 			children = (
 				41BBF55547B7CD086D6E6FCAFE522F2B /* BitzTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1386,7 +1364,6 @@
 				9709FD4363B0062AF1A2D59B683C3580 /* SLTarget.swift */,
 				E8E20D147F0B368C4A78FC600629EFC2 /* Support Files */,
 			);
-			name = SolarNetwork;
 			path = SolarNetwork;
 			sourceTree = "<group>";
 		};
@@ -1493,7 +1470,6 @@
 				82FAD3322866B733DE6671F5F6C9F9B3 /* x509_vfy.h */,
 				D90203E17210036F0B0B4AD3D7A20468 /* x509v3.h */,
 			);
-			name = openssl;
 			path = openssl;
 			sourceTree = "<group>";
 		};
@@ -1507,7 +1483,6 @@
 				601F00324AD705851B7F7BAFB285423C /* BlockexplorerTxs.swift */,
 				57E2710C885DBA2856CBC4141C9B248C /* BlockexplorerUtxos.swift */,
 			);
-			name = Blockexplorer;
 			path = Blockexplorer;
 			sourceTree = "<group>";
 		};
@@ -1517,7 +1492,6 @@
 				0A9F7568F34C65BC99390FE67FC3B706 /* InfuraGasPrice.swift */,
 				2CB611410A2673DF673ED59F52CEEF6E /* InfuraTxReceipt.swift */,
 			);
-			name = Infura;
 			path = Infura;
 			sourceTree = "<group>";
 		};
@@ -1528,17 +1502,16 @@
 				1E8DCF48AA016363C1B88994A0003997 /* ServerConnectBluetoothRequest.swift */,
 				E25B44BE838183330942D8068CAD1B2D /* ServerTransmitApduRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
 		6E8453586DEF2E571A708365071D3E05 /* Reader */ = {
 			isa = PBXGroup;
 			children = (
-				1E37B44DE8E9A9E1670457D5252BC666 /* ABTReaderManager.swift */,
 				925E489FD8B1AC29D61884DA54A9E7DE /* CardReaderDefinition.swift */,
-				D5680230F0373DD355F63D67E1151E32 /* CardReaderManager.swift */,
 				F7EDAE030992C36E2B026A85CBC32B82 /* CardReaderObserver.swift */,
+				1E37B44DE8E9A9E1670457D5252BC666 /* ABTReaderManager.swift */,
+				D5680230F0373DD355F63D67E1151E32 /* CardReaderManager.swift */,
 			);
 			name = Reader;
 			path = eNotesSDKPre/Classes/Reader;
@@ -1551,7 +1524,6 @@
 				0AFF32103980A11900AE7AF2E252B911 /* Request */,
 				BF693DE6062E6293B80EB6241E0C6CF3 /* Target */,
 			);
-			name = Blockexplorer;
 			path = Blockexplorer;
 			sourceTree = "<group>";
 		};
@@ -1562,7 +1534,6 @@
 				BFCD34FA9AB8C558DD36EDD33584F020 /* Request */,
 				F1618DA3435DAC26DCEA6E4E37DD8952 /* Target */,
 			);
-			name = Etherchain;
 			path = Etherchain;
 			sourceTree = "<group>";
 		};
@@ -1578,7 +1549,6 @@
 				0378DEBB5A6CB9AD373D4539174C034D /* EtherscanTxReceiptRequest.swift */,
 				9F57B6934521CE1355B2A5158C5B6E8B /* EtherscanTxsRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1589,7 +1559,6 @@
 				76BECA58CC36988E095E404F3302F725 /* Request */,
 				0FE5BB7A38D5CFDFF14FF17D73C428A2 /* Target */,
 			);
-			name = Etherscan;
 			path = Etherscan;
 			sourceTree = "<group>";
 		};
@@ -1599,7 +1568,6 @@
 				0C682DA9D7602A7055BA3E27596B1E78 /* BlockchainBalanceRequest.swift */,
 				C831F15B56A7E95B401D608C960EAD38 /* BlockchainUtxosRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1633,7 +1601,6 @@
 				FE5DB3CF0D015FA54530917BDD572ADF /* EtherscanBalance.swift */,
 				0DF0B5B930BFF10016A909CCD20CCE86 /* EtherscanTxs.swift */,
 			);
-			name = Etherscan;
 			path = Etherscan;
 			sourceTree = "<group>";
 		};
@@ -1642,7 +1609,6 @@
 			children = (
 				8B86F83ED0247B2E18FC5BDB8FDC0A85 /* CryptoCompareRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1673,7 +1639,6 @@
 				8CB2798CF9F54D98624FFD1B0A10285F /* CertificateParser.swift */,
 				3525CEBF365215DC447CA47A7CCE3D92 /* X509Certificate.swift */,
 			);
-			name = CertificateParser;
 			path = CertificateParser;
 			sourceTree = "<group>";
 		};
@@ -1695,7 +1660,6 @@
 				AB597E27D06DBBC0C5347DA09614E8AB /* Blockcypher */,
 				659D70B6C1844767F3A1F99FF89D569A /* Blockexplorer */,
 			);
-			name = Bitcoin;
 			path = Bitcoin;
 			sourceTree = "<group>";
 		};
@@ -1706,7 +1670,6 @@
 				A341D15AABC91EB3E58599C856E07956 /* ServerBluetoothDevice.swift */,
 				6D67164030F301BB703EAA9FB7EA2495 /* ServerConnectResultRaw.swift */,
 			);
-			name = ServerEmulator;
 			path = ServerEmulator;
 			sourceTree = "<group>";
 		};
@@ -1737,7 +1700,6 @@
 				0F4A2F53703AD88671A775C4F904B0D9 /* NSData+BTCData.h */,
 				6438D6A6EBB98DD128D19E1813F99E8B /* openssl */,
 			);
-			name = include;
 			path = include;
 			sourceTree = "<group>";
 		};
@@ -1746,7 +1708,6 @@
 			children = (
 				808778BF6F96B026F523ACF5E1ACE1B5 /* BlockchainTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1755,7 +1716,6 @@
 			children = (
 				EE0A3FDA17568E5DDA76378DD52E24F2 /* NotificationModel.swift */,
 			);
-			name = Notification;
 			path = Notification;
 			sourceTree = "<group>";
 		};
@@ -1787,7 +1747,6 @@
 			children = (
 				530F56E31A090075B085FBD0B851768D /* BitcoinfeesRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1802,7 +1761,6 @@
 				36F32CA3DA0C40EDF3E6EFCA17BFF5CD /* ABTBluetoothReaderManager.h */,
 				80FEB2A3D453BB4D5AE7720CD90CA303 /* ABTError.h */,
 			);
-			name = ACSBluetooth;
 			path = ACSBluetooth;
 			sourceTree = "<group>";
 		};
@@ -1811,7 +1769,6 @@
 			children = (
 				1B0610AFB12C33A3A2BB2C9970CD7BAD /* BlockcypherTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1822,7 +1779,6 @@
 				255E51C37C8978E0DF8E26219ED7039C /* Request */,
 				A5DE82EB68434A579D102491A3DC58C1 /* Target */,
 			);
-			name = Blockcypher;
 			path = Blockcypher;
 			sourceTree = "<group>";
 		};
@@ -1831,7 +1787,6 @@
 			children = (
 				D5321E72B29CE9B2BA252B2A6E300D65 /* BitcoinFees.swift */,
 			);
-			name = BitcoinFees;
 			path = BitcoinFees;
 			sourceTree = "<group>";
 		};
@@ -1844,7 +1799,6 @@
 				A027EEE8F4B3CC29989639ABD5F5EAC8 /* BlockcypherTxs.swift */,
 				56FFBC34EBE004DBCD684385E7D6EC3B /* BlockcypherUtxos.swift */,
 			);
-			name = Blockcypher;
 			path = Blockcypher;
 			sourceTree = "<group>";
 		};
@@ -1861,7 +1815,6 @@
 				79AE6162BA7FD77B7BBB6ED0557A3CFB /* eNotesTxReceipt.swift */,
 				4C08062464010283B6E3879F73E5666F /* eNotesUtxos.swift */,
 			);
-			name = eNotes;
 			path = eNotes;
 			sourceTree = "<group>";
 		};
@@ -1878,7 +1831,6 @@
 				D3E969D1FDA2824BBCE6EDF5592B0598 /* EthereumAddress.swift */,
 				44BAFE1DA6E12EBCAAA5AF91F220A12C /* NativeTypesEncoding+Extensions.swift */,
 			);
-			name = AbiParser;
 			path = AbiParser;
 			sourceTree = "<group>";
 		};
@@ -1887,7 +1839,6 @@
 			children = (
 				91B9D59DB57210AC55E9700E48C08504 /* include */,
 			);
-			name = CoreBitcoin;
 			path = CoreBitcoin;
 			sourceTree = "<group>";
 		};
@@ -1916,7 +1867,6 @@
 				2B730020F751D4551ECA22310EE361C0 /* CryptoCompare */,
 				F0179D7D9A4938E581CC9428300F7A8F /* Okex */,
 			);
-			name = ExchangeRate;
 			path = ExchangeRate;
 			sourceTree = "<group>";
 		};
@@ -1925,7 +1875,6 @@
 			children = (
 				13DF312D89634EF168284F5922DAFF80 /* BlockexplorerTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -1934,7 +1883,6 @@
 			children = (
 				FD0A956A3D49C27A7FC55798400D782E /* EtherchainGasPriceRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -1954,7 +1902,6 @@
 			children = (
 				1D0670B163527D2DA7766CEEA1CF0978 /* CryptoCompareTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2038,7 +1985,6 @@
 				248EA62E4560FBEE2E0B1DFFBA153506 /* ZeroPadding.swift */,
 				5C88BBBBC3986AB07FB037CED1A3D503 /* Support Files */,
 			);
-			name = CryptoSwift;
 			path = CryptoSwift;
 			sourceTree = "<group>";
 		};
@@ -2047,7 +1993,6 @@
 			children = (
 				2B7F4AAC3B3E68255C19829284E1475A /* CoinbaseRateRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2066,7 +2011,6 @@
 			children = (
 				A13A7B5037DBCB080D59F50FD105164C /* eNotesTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2075,7 +2019,6 @@
 			children = (
 				D516374B9E16F1645B1AB18CE978025B /* ServerTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2086,7 +2029,6 @@
 				28E43815EFB051D80CC588460E61643C /* Request */,
 				EBB97A25C1509D7C5B0DE58DEDB94D6E /* Target */,
 			);
-			name = Infura;
 			path = Infura;
 			sourceTree = "<group>";
 		};
@@ -2109,7 +2051,6 @@
 			children = (
 				3ECE13621B677F8620903E21B6355043 /* InfuraTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2120,7 +2061,6 @@
 				5226576FE136AB7A67031D87C9CAA374 /* Request */,
 				F3A5F72AA7B300155B6A79D2A0BD96A7 /* Target */,
 			);
-			name = Okex;
 			path = Okex;
 			sourceTree = "<group>";
 		};
@@ -2131,7 +2071,6 @@
 				69D71A86D902453E5A58EB6D6B1AC167 /* Request */,
 				DF0B18A4FA639AE6978DC37103E05C7A /* Target */,
 			);
-			name = ServerEmulator;
 			path = ServerEmulator;
 			sourceTree = "<group>";
 		};
@@ -2140,7 +2079,6 @@
 			children = (
 				0EF5BF6B374BA6BDD026E2BF62137CF7 /* EtherchainTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2167,7 +2105,6 @@
 				FCD7E3EACCBE8CAF5407A220AD08FBEF /* Request */,
 				52986CCB21674D8664F22AFCF3A5C336 /* Target */,
 			);
-			name = Bitz;
 			path = Bitz;
 			sourceTree = "<group>";
 		};
@@ -2176,7 +2113,6 @@
 			children = (
 				3146C333552F1322F2DFD4E1BF260C60 /* OkexTarget.swift */,
 			);
-			name = Target;
 			path = Target;
 			sourceTree = "<group>";
 		};
@@ -2196,7 +2132,6 @@
 				24F5157A025DD85BD9305EB6EC4A9AA6 /* Request */,
 				DC5321D2BFAB8A6126525B0DF9FA438A /* Target */,
 			);
-			name = eNotes;
 			path = eNotes;
 			sourceTree = "<group>";
 		};
@@ -2205,7 +2140,6 @@
 			children = (
 				30C0AED13133DC30EC5F6DCF3F6A75E7 /* EtherchainGasPrice.swift */,
 			);
-			name = Etherchain;
 			path = Etherchain;
 			sourceTree = "<group>";
 		};
@@ -2236,7 +2170,6 @@
 				0380719927A8C4F545B361B9F9C1D180 /* Words and Bits.swift */,
 				263C258D574BEDF3113B69C87C22C0DF /* Support Files */,
 			);
-			name = BigInt;
 			path = BigInt;
 			sourceTree = "<group>";
 		};
@@ -2248,7 +2181,6 @@
 				A74497BC38E5133574F94DCF95240D08 /* Blockcypher */,
 				70B644CA4E1D1D9ABA595DEBB6072BBC /* Blockexplorer */,
 			);
-			name = Bitcoin;
 			path = Bitcoin;
 			sourceTree = "<group>";
 		};
@@ -2257,7 +2189,6 @@
 			children = (
 				3FDD24DBCA625D8B36BA6927791B14B6 /* BitzRateRequest.swift */,
 			);
-			name = Request;
 			path = Request;
 			sourceTree = "<group>";
 		};
@@ -2571,6 +2502,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;

@@ -13,9 +13,6 @@ import CoreBluetooth
 class BluetoothTableViewController: UITableViewController {
     @IBOutlet weak var testBarItem: UIBarButtonItem!
     private var isTest = false
-    private var peripherals = [CBPeripheral]() {
-        didSet { tableView.reloadData() }
-    }
     private var devices = [ServerBluetoothDevice]() {
         didSet { tableView.reloadData() }
     }
@@ -55,7 +52,7 @@ class BluetoothTableViewController: UITableViewController {
     // MARK: - Table view delegate
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return isTest ? devices.count : peripherals.count
+        return isTest ? devices.count : 0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -63,7 +60,7 @@ class BluetoothTableViewController: UITableViewController {
         if isTest {
             cell.nameLabel.text = devices[indexPath.row].name
         } else {
-            cell.nameLabel.text = peripherals[indexPath.row].name
+            cell.nameLabel.text = "Temp"//peripherals[indexPath.row].name
         }
 
         return cell
@@ -71,29 +68,14 @@ class BluetoothTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if isTest {
-            CardReaderManager.shared.connectBluetooth(address: devices[indexPath.row].address)
+//            CardReaderManager.shared.connectBluetooth(address: devices[indexPath.row].address)
         } else {
-            CardReaderManager.shared.connectBluetooth(peripheral: peripherals[indexPath.row])
+//            CardReaderManager.shared.connectBluetooth(peripheral: peripherals[indexPath.row])
         }
     }
 }
 
 extension BluetoothTableViewController: CardReaderObserver {
-    
-    func didBluetoothUpdateState(state: CBManagerState) {
-        switch state {
-        case .poweredOff:
-            Alert.show(leftTxt: nil, msg: "Bluetooth is off, please open on it", title: "TIP")
-        case .poweredOn:
-            CardReaderManager.shared.startBluetoothScan()
-        default:
-            print("Bluetooth state: \(state)")
-        }
-    }
-    
-    func didDiscover(peripherals: [CBPeripheral]) {
-        self.peripherals = peripherals
-    }
     
     func didDiscover(devices: [ServerBluetoothDevice]) {
         self.devices = devices

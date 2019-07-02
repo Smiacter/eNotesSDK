@@ -31,8 +31,6 @@ import CoreNFC
 
 class ABTReaderManager: NSObject {
     var nfcTag: NFCISO7816Tag!
-    var manager = ABTBluetoothReaderManager()
-    var reader : ABTBluetoothReader!
     var signPrivateKeyClosure: ((String) -> ())?
     var freezeStatusClosure: ((Bool?) -> ())?
     var unfreezeLeftCountClosure: ((Int) -> ())?
@@ -61,18 +59,22 @@ extension ABTReaderManager {
         connectStatus = status
     }
     
-    func detectReader(with peripheral: CBPeripheral) {
-        manager.delegate = self
-        manager.detectReader(with: peripheral)
-    }
-    
+    /// id不为空，说明为HTTP模拟，否则为实体币
     func signPrivateKey(hashStr: String, id: Int? = nil) {
         apdu = .signPrivateKey
         let tv = Tlv.generate(tag: Data(hex: TagTransactionHash), value: Data(hex: hashStr))
         let serialData = Tlv.encode(tv: tv)
         let apduStr = apdu.value + serialData.toHexString()
-        guard let id = id else { reader.transmitApdu(Data(hex: apduStr)); return }
-        transceiveApdu(apdu: apdu, value: apduStr, id: id)
+        if let id = id {
+            transceiveApdu(apdu: apdu, value: apduStr, id: id)
+        } else {
+            let data = Data(hex: apduStr)
+            guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
+            nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+                guard error == nil else { return }
+                self.signPrivateKey(rawApdu: data)
+            }
+        }
     }
     
     func getFreezeStatus() {
@@ -89,7 +91,13 @@ extension ABTReaderManager {
         let tv = Tlv.generate(tag: Data(hex: TagFreeze), value: pinData)
         let serialData = Tlv.encode(tv: tv)
         let apduStr = apdu.value + serialData.toHexString()
-        reader.transmitApdu(Data(hex: apduStr))
+        
+        let data = Data(hex: apduStr)
+        guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+            guard error == nil else { return }
+            self.parseFreeze(rawApdu: data)
+        }
     }
     func unfreeze(pinStr: String) {
         guard let pinData = pinStr.data(using: .utf8) else { return }
@@ -97,30 +105,17 @@ extension ABTReaderManager {
         let tv = Tlv.generate(tag: Data(hex: TagFreeze), value: pinData)
         let serialData = Tlv.encode(tv: tv)
         let apduStr = apdu.value + serialData.toHexString()
-        reader.transmitApdu(Data(hex: apduStr))
+        
+        let data = Data(hex: apduStr)
+        guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+            guard error == nil else { return }
+            self.parseFreeze(rawApdu: data)
+        }
     }
 }
 
-// MARK: Card init
-
 extension ABTReaderManager {
-    
-    /// Authenticate the reader
-    func authenticate() {
-        let masterKey = Data(hex: MasterKey)
-        reader.authenticate(withMasterKey: masterKey)
-    }
-    
-    func enablePolling() {
-        if reader.isKind(of: ABTAcr1255uj1Reader.self) {
-            let command: [UInt8] = [0xE0, 0x00, 0x00, 0x40, 0x01]
-            reader.transmitEscapeCommand(command, length: UInt(command.count))
-        }
-    }
-    
-    func powerOn() {
-        reader.powerOnCard()
-    }
     
     private func throwError(error: CardReaderError) {
         connectStatus = .error
@@ -148,8 +143,6 @@ extension ABTReaderManager {
         default:
             apduData = Data(hex: apdu.value)
         }
-        
-//        reader.transmitApdu(apduData)
         
         guard let data = apduData else { return }
         guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
@@ -204,10 +197,6 @@ extension ABTReaderManager {
     
     /// 通过NFC读取，没有末尾的9000，直接解析即可
     func getTv(rawApdu: Data) -> Tv? {
-//        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else {
-//            return nil
-//        }
-        
         return Tlv.decode(data: rawApdu)
     }
     
@@ -247,7 +236,6 @@ extension ABTReaderManager {
         return cert
     }
     func judgeAndVerifyCertificate(rawApdu: Data) {
-//        guard let apdu = EnoteFormatter.stripApduTail(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         cert.append(rawApdu)
         if rawApdu.count < 255 {
             let tv = Tlv.decode(data: cert)
@@ -364,101 +352,6 @@ extension ABTReaderManager {
             freezeResultClosure?(.wrongFreezePin)
         } else if rawApdu.toHexString() == "6985" {
             freezeResultClosure?(.frozenAlready)
-        }
-    }
-}
-
-extension ABTReaderManager: ABTBluetoothReaderManagerDelegate {
-    
-    public func bluetoothReaderManager(_ bluetoothReaderManager: ABTBluetoothReaderManager!, didDetect reader: ABTBluetoothReader!, peripheral: CBPeripheral!, error: Error!) {
-        self.reader = reader
-        self.reader.delegate = self
-        self.reader.attach(peripheral)
-    }
-}
-
-extension ABTReaderManager: ABTBluetoothReaderDelegate {
-    
-    public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didAttach peripheral: CBPeripheral!, error: Error!) {
-        guard error == nil else {return}
-        // first step: authenticate the card when peripheral attach to reader
-        connectStatus = .disconnected
-        authenticate()
-    }
-    
-    public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didAuthenticateWithError error: Error!) {
-        guard error == nil else { return }
-        // second step: polling the card
-        enablePolling()
-    }
-    
-    public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didChangeCardStatus cardStatus: UInt, error: Error!) {
-        guard error == nil else { return }
-        if cardStatus == ABTBluetoothReaderCardStatusPresent {
-            powerOn()
-            CardReaderManager.shared.didCardPresent()
-            connectStatus = .progress
-        } else if cardStatus == ABTBluetoothReaderCardStatusAbsent {
-            CardReaderManager.shared.didCardAbsent()
-            if connectStatus == .disconnected {
-                throwError(error: .deviceNotFound)
-            }
-            connectStatus = .absent
-        } else if cardStatus == ABTBluetoothReaderCardStatusPowerSavingMode {
-            CardReaderManager.shared.didBluetoothDisconnect(peripheral: nil)
-            connectStatus = .disconnected
-        }
-    }
-    
-    public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didReturnAtr atr: Data!, error: Error!) {
-        guard error == nil else { return }
-        // start send apdu when card powered on
-        cert = Data()
-        certP1 = 0
-        sendApdu(apdu: .aid)
-    }
-    
-    public func bluetoothReader(_ bluetoothReader: ABTBluetoothReader!, didReturnResponseApdu apdu: Data!, error: Error!) {
-        guard error == nil else {
-            if absentCount < 3 {
-                throwError(error: .absent)
-            } else {
-                throwError(error: .absentLimit)
-                absentCount = 0
-            }
-            absentCount += 1
-            return
-        }
-        switch self.apdu {
-        case .aid:
-            sendApdu(apdu: .version)
-        case .version:
-            verifyApduVersion(rawApdu: apdu)
-        case .publicKey:
-            savePublicKey(rawApdu: apdu)
-            sendApdu(apdu: .cardStatus)
-        case .cardStatus:
-            saveCardStatus(rawApdu: apdu)
-            sendApdu(apdu: .freezeStatus)
-        case .freezeStatus:
-            parseFreezeStatus(rawApdu: apdu)
-            isParseToSetFrozenStatus ? sendApdu(apdu: .certificate("\(certP1)")) : ()
-        case .certificate:
-            judgeAndVerifyCertificate(rawApdu: apdu)
-        case .verifyDevice:
-            verifyDevice(rawApdu: apdu)
-            sendApdu(apdu: .verifyBlockchain)
-        case .verifyBlockchain:
-            verifyBlockchain(rawApdu: apdu)
-        case .signPrivateKey:
-            signPrivateKey(rawApdu: apdu)
-        case .unfreezeLeftCount:
-            parseUnFreezeLeftCount(rawApdu: apdu)
-        case .freeze:
-            parseFreeze(rawApdu: apdu)
-        case .unfreeze:
-            parseFreeze(rawApdu: apdu)
-        case .none:break
         }
     }
 }
