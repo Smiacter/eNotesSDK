@@ -68,15 +68,6 @@ extension CardReaderManager: NFCTagReaderSessionDelegate {
         nfcTagReaderSession?.begin()
     }
     
-    private func apduHanding(tag: NFCISO7816Tag) {
-        let aidData = Data(hex: "00CA0055") // version：00CA0012， AID：00A404000C654e6f7465734170706c6574
-        guard let apdu1 = NFCISO7816APDU(data: aidData) else { return }
-        tag.sendCommand(apdu: apdu1) { (data, _, _, error) in
-            print(data)
-            print(error.debugDescription)
-        }
-    }
-    
     // MARK: NFCTagReaderSessionDelegate
     
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
