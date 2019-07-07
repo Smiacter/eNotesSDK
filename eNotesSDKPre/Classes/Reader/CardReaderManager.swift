@@ -64,31 +64,32 @@ extension CardReaderManager: NFCTagReaderSessionDelegate {
         guard !useServerSimulate else { getBluetoothDeviceList(); return }
         
         nfcTagReaderSession = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self)
-        nfcTagReaderSession?.alertMessage = "Place the device on the innercover of the passport"
+//        nfcTagReaderSession?.alertMessage = "Place the device on the innercover of the passport"
         nfcTagReaderSession?.begin()
+    }
+    
+    func invalidNFCSession() {
+        nfcTagReaderSession?.invalidate()
+        nfcTagReaderSession = nil
     }
     
     // MARK: NFCTagReaderSessionDelegate
     
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
-        print("tagReaderSessionDidBecomeActive")
+        
     }
     
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
-        print("tagReaderSession didInvalidateWithError")
-        print(error)
+        invalidNFCSession()
     }
     
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
         for tag in tags {
-            print(tag.isAvailable)
             switch tag {
             case .iso7816(let tag7816):
                 session.connect(to: tag) { (error) in
                     guard error == nil else { return }
                     guard !tag7816.initialSelectedAID.isEmpty else { return }
-                    print(tag7816.initialSelectedAID)
-//                    self.apduHanding(tag: tag7816)
                     self.abtManager.nfcTag = tag7816
                     self.abtManager.apduHanding()
                 }

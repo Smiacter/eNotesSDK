@@ -149,22 +149,21 @@ extension ABTReaderManager {
         nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
             guard error == nil else { return }
             switch self.apdu {
-            case .publicKey:
+            case .freezeStatus:         // 2 - get freeze status
+                self.parseFreezeStatus(rawApdu: data)
+                self.isParseToSetFrozenStatus ? self.sendApdu(apdu: .publicKey) : ()
+            case .publicKey:            // 3 - get public key
                 self.savePublicKey(rawApdu: data)
                 self.sendApdu(apdu: .cardStatus)
-            case .cardStatus:
+            case .cardStatus:           // 4 - get signature count
                 self.saveCardStatus(rawApdu: data)
-                self.sendApdu(apdu: .freezeStatus)
-            case .freezeStatus:
-                self.parseFreezeStatus(rawApdu: data)
-                self.isParseToSetFrozenStatus ? self.sendApdu(apdu: .certificate("\(self.certP1)")) : ()
-            case .certificate:
-                self.judgeAndVerifyCertificate(rawApdu: data)
-            case .verifyDevice:
-                self.verifyDevice(rawApdu: data)
                 self.sendApdu(apdu: .verifyBlockchain)
-            case .verifyBlockchain:
+            case .verifyBlockchain:     // 5 - verify public key
                 self.verifyBlockchain(rawApdu: data)
+            case .certificate:          // 6 - parse cert
+                self.judgeAndParseCertificate(rawApdu: data)
+            case .verifyDevice:         // 7 - verify device and verify certificate
+                self.verifyDevice(rawApdu: data)
             case .signPrivateKey:
                 self.signPrivateKey(rawApdu: data)
             case .unfreezeLeftCount:
@@ -210,7 +209,7 @@ extension ABTReaderManager {
             throwError(error: .apduVersionTooLow)
             return
         }
-        sendApdu(apdu: .publicKey)
+        sendApdu(apdu: .freezeStatus)
     }
     
     /// Save public key for global use
@@ -235,21 +234,21 @@ extension ABTReaderManager {
         guard let cert = tv[tag] else { return nil }
         return cert
     }
-    func judgeAndVerifyCertificate(rawApdu: Data) {
+    func judgeAndParseCertificate(rawApdu: Data) {
         cert.append(rawApdu)
         if rawApdu.count < 255 {
             let tv = Tlv.decode(data: cert)
             let tag = Data(hex: TagDeviceCertificate)
             guard let certValue = tv[tag] else { return }
             cert = certValue
-            verifyCertificate()
+            parseCertificate()
         } else {
             sendApdu(apdu: .certificate("\(certP1 + 1)"))
         }
     }
     
     /// if id is not nil, means you use HTTP Server to simulate NFC Device
-    func verifyCertificate(id: Int? = nil) {
+    func parseCertificate(id: Int? = nil) {
         guard !cert.isEmpty else { throwError(error: .apduReaderError); return }
         guard let certParser = CertificateParser(hexCert: cert.toBase64String()) else { return }
         if certParser.version > VersionCertificate {
@@ -265,32 +264,15 @@ extension ABTReaderManager {
         card.address = EnoteFormatter.address(publicKey: publicKey, network: card.network)
         card.isSafe = status == "0000"
         card.isFrozen = isFrozen
-        let certificate = card.tbsCertificate.toHexString()
-        let certificateAndSig = card.tbsCertificateAndSig.toHexString()
-        let postion = certificateAndSig.positionOf(subStr: certificate)
-        let certficateStr = certificateAndSig.subString(to: postion + certificate.count)
         
-        func verify(publicKey: Data?) {
-            guard let publicKey = publicKey else { throwError(error: .apduReaderError); return }
-            guard Verification.verify(r: card.r, s: card.s, org: certficateStr, publicKey: publicKey.toHexString()) else {
-                throwError(error: .verifyError); return
-            }
-            guard let id = id else { sendApdu(apdu: .verifyDevice); return }
-            guard let apdu = getApduData(tag: TagChallenge, apdu: .verifyDevice) else { throwError(error: .apduReaderError); return }
-            transceiveApdu(apdu: .verifyDevice, value: apdu.toHexString(), id: id)
-        }
-        
-        let data = AbiParser.encodePublicKeyData(issuer: card.issuer.uppercased(), batch: card.manufactureBatch)
-        let isTestOrDemo = card.serialNumber.lowercased().hasPrefix(EthCallTestPrefix) || card.serialNumber.lowercased().hasPrefix(EthCallDemoPrefix)
-        let network: Network = isTestOrDemo ? .kovan : .ethereum
-        NetworkManager.shared.call(network: network, toAddress: network.contractAddress, data: data) { [weak self] (result, error) in
-            guard error == nil else { self?.throwError(error: .apduReaderError); return }
-            let publicKey = AbiParser.decodePublicKeyData(result: result)
-            verify(publicKey: publicKey)
-        }
+        // verify device first,
+        guard let id = id else { sendApdu(apdu: .verifyDevice); return }
+        guard let apdu = getApduData(tag: TagChallenge, apdu: .verifyDevice) else { throwError(error: .apduReaderError); return }
+        transceiveApdu(apdu: .verifyDevice, value: apdu.toHexString(), id: id)
     }
     
     func verifyDevice(rawApdu: Data) {
+        CardReaderManager.shared.invalidNFCSession()
         guard let tv = getTv(rawApdu: rawApdu) else { throwError(error: .apduReaderError); return }
         let tagSign = Data(hex: TagVerificationSignature), tagSalt = Data(hex: TagSalt)
         guard let signature = tv[tagSign], let salt = tv[tagSalt] else {
@@ -301,6 +283,34 @@ extension ABTReaderManager {
         let s = signature.subdata(in: 32..<signature.count).toHexString()
         guard Verification.verify(r: r, s: s, org: org, publicKey: card.publicKey) else {
             throwError(error: .verifyError); return
+        }
+        
+        // last step, verify certificate
+        let certificate = card.tbsCertificate.toHexString()
+        let certificateAndSig = card.tbsCertificateAndSig.toHexString()
+        let postion = certificateAndSig.positionOf(subStr: certificate)
+        let certficateStr = certificateAndSig.subString(to: postion + certificate.count)
+        
+        func verify(publicKey: Data?) {
+            guard let publicKey = publicKey else { throwError(error: .apduReaderError); return }
+            guard Verification.verify(r: card.r, s: card.s, org: certficateStr, publicKey: publicKey.toHexString()) else {
+                throwError(error: .verifyError); return
+            }
+            
+            // card read flow over
+            connectStatus = .connected
+            absentCount = 0
+            CardReaderManager.shared.didCardRead(card: card, error: nil)
+        }
+        
+        let data = AbiParser.encodePublicKeyData(issuer: card.issuer.uppercased(), batch: card.manufactureBatch)
+        let isTestOrDemo = card.serialNumber.lowercased().hasPrefix(EthCallTestPrefix) || card.serialNumber.lowercased().hasPrefix(EthCallDemoPrefix)
+        let network: Network = isTestOrDemo ? .kovan : .ethereum
+        // TODO: add loading stuff
+        NetworkManager.shared.call(network: network, toAddress: network.contractAddress, data: data) { [weak self] (result, error) in
+            guard error == nil else { self?.throwError(error: .apduReaderError); return }
+            let publicKey = AbiParser.decodePublicKeyData(result: result)
+            verify(publicKey: publicKey)
         }
     }
     
@@ -316,10 +326,8 @@ extension ABTReaderManager {
         guard Verification.verify(r: r, s: s, org: org, publicKey: publicKey.toHexString()) else {
             throwError(error: .verifyError); return
         }
-        // card read flow over
-        connectStatus = .connected
-        absentCount = 0
-        CardReaderManager.shared.didCardRead(card: card, error: nil)
+        
+        sendApdu(apdu: .certificate("\(self.certP1)"))
     }
     
     func signPrivateKey(rawApdu: Data) {
@@ -403,7 +411,7 @@ extension ABTReaderManager {
             if let data = getCertificateData(rawApdu: Data(hex: result)) {
                 self.cert.append(data)
                 if data.count < 253 {
-                    verifyCertificate(id: id)
+                    parseCertificate(id: id)
                 } else { // cert data max length is 253, if bigger than that we should get it several times
                     transceiveApdu(apdu: .certificate("\(certP1 + 1)"), value: Apdu.certificate("\(certP1 + 1)").value, id: id)
                 }
