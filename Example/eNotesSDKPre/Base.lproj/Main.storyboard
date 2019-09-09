@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14810.12" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Xw2-r4-PLM">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.15"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -490,10 +489,14 @@
                         <outlet property="facevalueLabel" destination="eWg-aU-slv" id="qma-9P-Z6b"/>
                         <outlet property="manufactureLabel" destination="gfO-hC-Lct" id="XjT-nw-L95"/>
                         <outlet property="networkLabel" destination="s72-9d-hfE" id="EJd-ZI-jrC"/>
+                        <outlet property="pinLeftCountLbl" destination="Bs1-r6-Ssc" id="Dxh-RT-Ceu"/>
+                        <outlet property="pinStatusLbl" destination="e7W-Cu-f1I" id="Tgb-rx-HAt"/>
                         <outlet property="productionDateLabel" destination="KuG-fD-0pD" id="Vqu-31-9K5"/>
                         <outlet property="safeStatusLabel" destination="66N-37-yKs" id="vRm-sS-F5h"/>
                         <outlet property="serialNumberLabel" destination="uLU-VD-ROS" id="Pzy-PC-iqW"/>
+                        <outlet property="setPinLbl" destination="88d-Uh-QKM" id="Sbw-hf-6dL"/>
                         <outlet property="typeLabel" destination="pMC-gJ-kFB" id="bv5-IW-uP7"/>
+                        <outlet property="unlockPinLbl" destination="YrD-Q6-9GJ" id="5ak-SQ-vAh"/>
                         <segue destination="mGj-Kb-QH4" kind="show" identifier="WithdrawSegue" id="Gci-H9-9wk"/>
                     </connections>
                 </tableViewController>

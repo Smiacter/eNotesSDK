@@ -40,7 +40,7 @@ let DefaultBtcFeeApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .bitcoin
 let DefaultBtcFeeTestApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .blockexplorer, .eNotes] :  [.blockcypher, .blockexplorer]
 let DefaultBtcTxsApiOrder: [ApiType] = [.blockexplorer, .blockcypher]
 /// common btc api array
-let BtcCommonApis: [ApiType] = enableEnotesApi ?  [.blockchain, .blockcypher, .blockexplorer, .eNotes] : [.blockchain, .blockcypher, .blockexplorer]
+let BtcCommonApis: [ApiType] = enableEnotesApi ?  [.blockcypher, .blockexplorer, .eNotes] : [.blockcypher, .blockexplorer] // edit by kj , delete [.blockchain] because it return null
 /// send transaction btc api array
 let BtcSendTxApis: [ApiType] = enableEnotesApi ?  [.blockcypher, .blockexplorer, .eNotes] : [.blockcypher, .blockexplorer]
 

@@ -29,6 +29,10 @@ import CoreBluetooth
 import ethers
 import CoreNFC
 
+public enum NFCScanType {
+    case readCard, signTxHash, frozen
+}
+
 public class CardReaderManager: NSObject {
     
     public static let shared = CardReaderManager()
@@ -51,6 +55,8 @@ public class CardReaderManager: NSObject {
     // NFC
     private var nfcTagReaderSession: NFCTagReaderSession?
     private var abtManager = ABTReaderManager()
+    private var nfcScanType = NFCScanType.readCard
+    private var nfcDetectClosure: (() -> ())?
 }
 
 // MARK: NFC Reader - add at 2019.07.01
@@ -59,10 +65,11 @@ extension CardReaderManager: NFCTagReaderSessionDelegate {
     // MARK: NFC Method
     
     /// 唤起NFC扫描
-    public func scanNFC() {
+    public func scanNFC(type: NFCScanType = .readCard) {
         // 使用局域网模拟
         guard !useServerSimulate else { getBluetoothDeviceList(); return }
         
+        nfcScanType = type
         nfcTagReaderSession = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self)
 //        nfcTagReaderSession?.alertMessage = "Place the device on the innercover of the passport"
         nfcTagReaderSession?.begin()
@@ -87,11 +94,15 @@ extension CardReaderManager: NFCTagReaderSessionDelegate {
         for tag in tags {
             switch tag {
             case .iso7816(let tag7816):
-                session.connect(to: tag) { (error) in
+                session.connect(to: tag) { [weak self] error in
                     guard error == nil else { return }
                     guard !tag7816.initialSelectedAID.isEmpty else { return }
-                    self.abtManager.nfcTag = tag7816
-                    self.abtManager.apduHanding()
+                    self?.abtManager.nfcTag = tag7816
+                    if self?.nfcScanType == .readCard {
+                        self?.abtManager.apduHanding()
+                    } else {
+                        self?.nfcDetectClosure?()
+                    }
                 }
             default:
                 ()
@@ -153,61 +164,71 @@ extension CardReaderManager {
     ///  - closure:
     ///   - String: return the rawtx which will be used to send raw transaction
     public func getEthRawTransaction(sendAddress: String, toAddress: String, value: String, gasPrice: String, estimateGas: String, nonce: UInt, data: Data? = nil, closure: rawtxClosure) {
-        let transaction = Transaction()
-        transaction.toAddress = Address(string: toAddress)
-        transaction.gasPrice = BigNumber(hexString: gasPrice)
-        transaction.gasLimit = BigNumber(hexString: estimateGas)
-        transaction.nonce = nonce
-        if let data = data {
-            transaction.data = data
-            transaction.value = BigNumber(integer: 0)
-        } else {
-            if let balanceNum = BigNumber(hexString: value), let valueNum = balanceNum.sub(transaction.gasPrice.mul(transaction.gasLimit)) {
-                transaction.value = valueNum
+        
+        func signTransactionHash(sendAddress: String, toAddress: String, value: String, gasPrice: String, estimateGas: String, nonce: UInt, data: Data? = nil, closure: rawtxClosure) {
+            let transaction = Transaction()
+            transaction.toAddress = Address(string: toAddress)
+            transaction.gasPrice = BigNumber(hexString: gasPrice)
+            transaction.gasLimit = BigNumber(hexString: estimateGas)
+            transaction.nonce = nonce
+            if let data = data {
+                transaction.data = data
+                transaction.value = BigNumber(integer: 0)
+            } else {
+                if let balanceNum = BigNumber(hexString: value), let valueNum = balanceNum.sub(transaction.gasPrice.mul(transaction.gasLimit)) {
+                    transaction.value = valueNum
+                }
+            }
+            
+            let serializeData = transaction.unsignedSerialize()
+            let secureData = SecureData.keccak256(serializeData)
+            guard let hash = Hash(data: secureData) else {
+                return
+            }
+            let hexHash = hash.hexString.subString(from: 2)
+            
+            abtManager.signPrivateKey(hashStr: hexHash, id: connectId)
+            abtManager.signPrivateKeyClosure = { privateKey in
+                let rStr = privateKey.subString(to: 64)
+                let sStr = privateKey.subString(from: 64)
+                guard let bigR = BTCBigNumber(hexString: rStr), let bigS = BTCBigNumber(hexString: sStr) else {
+                    return
+                }
+                // MARK: be careful, use the unsafe pointer cast!!! check it!!!
+                let s = unsafeBitCast(bigS.bignum, to: UnsafeMutablePointer<BIGNUM>.self)
+                
+                let ctx = BN_CTX_new()
+                BN_CTX_start(ctx)
+                
+                let group = EC_GROUP_new_by_curve_name(714) // NID_secp256k1 -> 714 define in 'OpenSSL-Universal' -> 'obj_mac.h'
+                let order = BN_CTX_get(ctx)
+                let halfOrder = BN_CTX_get(ctx)
+                EC_GROUP_get_order(group, order, ctx)
+                BN_rshift1(halfOrder, order)
+                
+                if BN_cmp(s, halfOrder) > 0 {
+                    BN_sub(s, order, s)
+                }
+                BN_CTX_end(ctx)
+                BN_CTX_free(ctx)
+                EC_GROUP_free(group)
+                
+                guard let rData = BTCBigNumber(bignum: bigR.bignum).unsignedBigEndian, let sData = BTCBigNumber(bignum: bigS.bignum).unsignedBigEndian else {
+                    return
+                }
+                transaction.populateSignature(withR: rData, s: sData, address: Address(string: sendAddress))
+                let serialize = transaction.serialize()
+                let rawtx = BTCHexFromData(serialize).addHexPrefix()
+                
+                closure?(rawtx)
             }
         }
         
-        let serializeData = transaction.unsignedSerialize()
-        let secureData = SecureData.keccak256(serializeData)
-        guard let hash = Hash(data: secureData) else {
-            return
-        }
-        let hexHash = hash.hexString.subString(from: 2)
         
-        abtManager.signPrivateKey(hashStr: hexHash, id: connectId)
-        abtManager.signPrivateKeyClosure = { privateKey in
-            let rStr = privateKey.subString(to: 64)
-            let sStr = privateKey.subString(from: 64)
-            guard let bigR = BTCBigNumber(hexString: rStr), let bigS = BTCBigNumber(hexString: sStr) else {
-                return
-            }
-            // MARK: be careful, use the unsafe pointer cast!!! check it!!!
-            let s = unsafeBitCast(bigS.bignum, to: UnsafeMutablePointer<BIGNUM>.self)
-            
-            let ctx = BN_CTX_new()
-            BN_CTX_start(ctx)
-            
-            let group = EC_GROUP_new_by_curve_name(714) // NID_secp256k1 -> 714 define in 'OpenSSL-Universal' -> 'obj_mac.h'
-            let order = BN_CTX_get(ctx)
-            let halfOrder = BN_CTX_get(ctx)
-            EC_GROUP_get_order(group, order, ctx)
-            BN_rshift1(halfOrder, order)
-            
-            if BN_cmp(s, halfOrder) > 0 {
-                BN_sub(s, order, s)
-            }
-            BN_CTX_end(ctx)
-            BN_CTX_free(ctx)
-            EC_GROUP_free(group)
-            
-            guard let rData = BTCBigNumber(bignum: bigR.bignum).unsignedBigEndian, let sData = BTCBigNumber(bignum: bigS.bignum).unsignedBigEndian else {
-                return
-            }
-            transaction.populateSignature(withR: rData, s: sData, address: Address(string: sendAddress))
-            let serialize = transaction.serialize()
-            let rawtx = BTCHexFromData(serialize).addHexPrefix()
-            
-            closure?(rawtx)
+        
+        scanNFC(type: .signTxHash)
+        nfcDetectClosure = {
+            signTransactionHash(sendAddress: sendAddress, toAddress: toAddress, value: value, gasPrice: gasPrice, estimateGas: estimateGas, nonce: nonce, data: data, closure: closure)
         }
     }
     
@@ -223,78 +244,86 @@ extension CardReaderManager {
     ///   - String: return the rawtx which will be used to send raw transaction
     public func getBtcRawTransaction(publicKey: Data, toAddress: String, utxos: [UtxoModel], network: Network, fee: BTCAmount, closure: rawtxClosure) {
         
-        DispatchQueue.global().async {
-            var destinationAddress: BTCAddress?
-            if network == .mainnet {
-                destinationAddress = BTCPublicKeyAddress(string: toAddress)
-            } else if network == .testnet {
-                destinationAddress = BTCPublicKeyAddressTestnet(string: toAddress)
-            }
-            guard destinationAddress != nil else { return }
+        func signTransactionHash(publicKey: Data, toAddress: String, utxos: [UtxoModel], network: Network, fee: BTCAmount, closure: rawtxClosure) {
             
-            var outputs: [BTCTransactionOutput] = []
-            for utxo in utxos {
-                let output = BTCTransactionOutput()
-                output.value = utxo.value
-                output.script = BTCScript(data: BTCDataFromHex(utxo.script))
-                output.index = utxo.index
-                output.confirmations = utxo.confirmations
+            DispatchQueue.global().async {
+                var destinationAddress: BTCAddress?
+                if network == .mainnet {
+                    destinationAddress = BTCPublicKeyAddress(string: toAddress)
+                } else if network == .testnet {
+                    destinationAddress = BTCPublicKeyAddressTestnet(string: toAddress)
+                }
+                guard destinationAddress != nil else { return }
                 
-                guard let bigHashData = BTCDataFromHex(utxo.txid) else { return }
-                var hashData = Data()
-                for (_, data) in bigHashData.enumerated().reversed() {
-                    hashData.append(data) // bigHashData.subdata(in: i-1 ..< i)
-                }
-                output.transactionHash = hashData
-                outputs.append(output)
-            }
-            
-            outputs = outputs.sorted(by: { (output1, output2) -> Bool in
-                return output1.value < output2.value
-            })
-            
-            let tx = BTCTransaction()
-            var spentCoins: BTCAmount = 0
-            for output in outputs {
-                let input = BTCTransactionInput()
-                input.previousHash = output.transactionHash
-                input.previousIndex = output.index
-                tx.addInput(input)
-                spentCoins += output.value
-            }
-            let paymentOutput = BTCTransactionOutput(value: spentCoins - fee, address: destinationAddress)
-            tx.addOutput(paymentOutput)
-            
-            for (i, output) in outputs.enumerated() {
-                guard let inputs = tx.inputs as? [BTCTransactionInput] else { return }
-                do {
-                    let input = inputs[i]
-                    let data1 = tx.data
-                    let hashType = BTCSignatureHashType.BTCSignatureHashTypeAll
-                    let hash = try tx.signatureHash(for: output.script, inputIndex: UInt32(i), hashType: hashType)
-                    let data2 = tx.data
-                    guard data1 == data2 else { return }
-                    guard let hexStr = BTCHexFromData(hash) else { return }
+                var outputs: [BTCTransactionOutput] = []
+                for utxo in utxos {
+                    let output = BTCTransactionOutput()
+                    output.value = utxo.value
+                    output.script = BTCScript(data: BTCDataFromHex(utxo.script))
+                    output.index = utxo.index
+                    output.confirmations = utxo.confirmations
                     
-                    self.abtManager.signPrivateKey(hashStr: hexStr, id: self.connectId)
-                    
-                    let sema = DispatchSemaphore(value: 0)
-                    
-                    self.abtManager.signPrivateKeyClosure = { privateKey in
-                        let signature = BitcoinHelper.generateSignature(privateKey, hashtype: hashType)
-                        guard let script = BTCScript() else { return }
-                        script.appendData(signature)
-                        script.appendData(publicKey)
-                        input.signatureScript = script
-                        sema.signal()
+                    guard let bigHashData = BTCDataFromHex(utxo.txid) else { return }
+                    var hashData = Data()
+                    for (_, data) in bigHashData.enumerated().reversed() {
+                        hashData.append(data) // bigHashData.subdata(in: i-1 ..< i)
                     }
-                    sema.wait()
-                } catch {
-                    
+                    output.transactionHash = hashData
+                    outputs.append(output)
                 }
+                
+                outputs = outputs.sorted(by: { (output1, output2) -> Bool in
+                    return output1.value < output2.value
+                })
+                
+                let tx = BTCTransaction()
+                var spentCoins: BTCAmount = 0
+                for output in outputs {
+                    let input = BTCTransactionInput()
+                    input.previousHash = output.transactionHash
+                    input.previousIndex = output.index
+                    tx.addInput(input)
+                    spentCoins += output.value
+                }
+                let paymentOutput = BTCTransactionOutput(value: spentCoins - fee, address: destinationAddress)
+                tx.addOutput(paymentOutput)
+                
+                for (i, output) in outputs.enumerated() {
+                    guard let inputs = tx.inputs as? [BTCTransactionInput] else { return }
+                    do {
+                        let input = inputs[i]
+                        let data1 = tx.data
+                        let hashType = BTCSignatureHashType.BTCSignatureHashTypeAll
+                        let hash = try tx.signatureHash(for: output.script, inputIndex: UInt32(i), hashType: hashType)
+                        let data2 = tx.data
+                        guard data1 == data2 else { return }
+                        guard let hexStr = BTCHexFromData(hash) else { return }
+                        
+                        self.abtManager.signPrivateKey(hashStr: hexStr, id: self.connectId)
+                        
+                        let sema = DispatchSemaphore(value: 0)
+                        
+                        self.abtManager.signPrivateKeyClosure = { privateKey in
+                            let signature = BitcoinHelper.generateSignature(privateKey, hashtype: hashType)
+                            guard let script = BTCScript() else { return }
+                            script.appendData(signature)
+                            script.appendData(publicKey)
+                            input.signatureScript = script
+                            sema.signal()
+                        }
+                        sema.wait()
+                    } catch {
+                        
+                    }
+                }
+                
+                closure?(tx.hex)
             }
-            
-            closure?(tx.hex)
+        }
+        
+        scanNFC(type: .signTxHash)
+        nfcDetectClosure = {
+            signTransactionHash(publicKey: publicKey, toAddress: toAddress, utxos: utxos, network: network, fee: fee, closure: closure)
         }
     }
 }
@@ -307,22 +336,34 @@ public typealias freezeResultClosure = ((FreezeResult) -> ())?
 extension CardReaderManager {
     
     public func getFreezeStatus(closure: freezeStatusClosure) {
-        abtManager.getFreezeStatus()
-        abtManager.freezeStatusClosure = { closure?($0) }
+        scanNFC(type: .frozen)
+        nfcDetectClosure = { [weak self] in
+            self?.abtManager.getFreezeStatus()
+            self?.abtManager.freezeStatusClosure = { closure?($0) }
+        }
     }
     
     public func getUnfreezeLeftCount(closure: unfreezeLeftCountClosure) {
-        abtManager.getUnFreezeLeftCount()
-        abtManager.unfreezeLeftCountClosure = { closure?($0) }
+        scanNFC(type: .frozen)
+        nfcDetectClosure = { [weak self] in
+            self?.abtManager.getUnFreezeLeftCount()
+            self?.abtManager.unfreezeLeftCountClosure = { closure?($0) }
+        }
     }
     
     public func freeze(pinStr: String, closure: freezeResultClosure) {
-        abtManager.freeze(pinStr: pinStr)
-        abtManager.freezeResultClosure = { closure?($0) }
+        scanNFC(type: .frozen)
+        nfcDetectClosure = { [weak self] in
+            self?.abtManager.freeze(pinStr: pinStr)
+            self?.abtManager.freezeResultClosure = { closure?($0) }
+        }
     }
     public func unfreeze(pinStr: String, closure: freezeResultClosure) {
-        abtManager.unfreeze(pinStr: pinStr)
-        abtManager.freezeResultClosure = { closure?($0) }
+        scanNFC(type: .frozen)
+        nfcDetectClosure = { [weak self] in
+            self?.abtManager.unfreeze(pinStr: pinStr)
+            self?.abtManager.freezeResultClosure = { closure?($0) }
+        }
     }
 }
 

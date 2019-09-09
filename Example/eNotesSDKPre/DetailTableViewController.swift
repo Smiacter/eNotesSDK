@@ -21,6 +21,10 @@ class DetailTableViewController: UITableViewController {
     @IBOutlet weak var manufactureLabel: UILabel!
     @IBOutlet weak var serialNumberLabel: UILabel!
     @IBOutlet weak var productionDateLabel: UILabel!
+    @IBOutlet weak var pinStatusLbl: UILabel!
+    @IBOutlet weak var pinLeftCountLbl: UILabel!
+    @IBOutlet weak var setPinLbl: UILabel!
+    @IBOutlet weak var unlockPinLbl: UILabel!
     var card: Card?
     
     override func viewDidLoad() {
@@ -77,11 +81,15 @@ class DetailTableViewController: UITableViewController {
         switch indexPath.row {
         case 9:
             CardReaderManager.shared.getFreezeStatus { (isFrozen) in
-                print("isFroze: \(isFrozen)")
+                DispatchQueue.main.async {
+                    self.pinStatusLbl.text = (isFrozen ?? false) ? "已设置" : "未设置"
+                }
             }
         case 10:
             CardReaderManager.shared.getUnfreezeLeftCount { (count) in
-                print("left count: \(count)")
+                DispatchQueue.main.async {
+                    self.pinLeftCountLbl.text = "\(count)"
+                }
             }
         case 11:
             CardReaderManager.shared.freeze(pinStr: "123456") { (result) in
