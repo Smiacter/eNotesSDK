@@ -92,12 +92,12 @@ class DetailTableViewController: UITableViewController {
                 }
             }
         case 11:
-            CardReaderManager.shared.freeze(pinStr: "123456") { (result) in
+            CardReaderManager.shared.freeze(pinStr: "123456") { (result, count) in
                 print("result: \(result)")
             }
         case 12:
-            CardReaderManager.shared.unfreeze(pinStr: "123459") { (result) in
-                print("result: \(result)")
+            CardReaderManager.shared.unfreeze(pinStr: "123459") { (result, count) in
+                print("result: \(result), left count: \(count ?? 0)")
             }
         default:break
         }

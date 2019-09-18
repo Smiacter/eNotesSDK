@@ -34,7 +34,7 @@ class ABTReaderManager: NSObject {
     var signPrivateKeyClosure: ((String) -> ())?
     var freezeStatusClosure: ((Bool?) -> ())?
     var unfreezeLeftCountClosure: ((Int) -> ())?
-    var freezeResultClosure: ((FreezeResult) -> ())?
+    var freezeResultClosure: ((FreezeResult, Int?) -> ())?
     
     private var apdu: Apdu = .none
     private var connectStatus: CardConnecetStatus = .disconnected
@@ -94,9 +94,9 @@ extension ABTReaderManager {
         
         let data = Data(hex: apduStr)
         guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
-        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, code, error) in
             guard error == nil else { return }
-            self.parseFreeze(rawApdu: data)
+            self.parseFreeze(code: code)
         }
     }
     func unfreeze(pinStr: String) {
@@ -108,9 +108,9 @@ extension ABTReaderManager {
         
         let data = Data(hex: apduStr)
         guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
-        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, code, error) in
             guard error == nil else { return }
-            self.parseFreeze(rawApdu: data)
+            self.parseFreeze(code: code)
         }
     }
 }
@@ -146,7 +146,7 @@ extension ABTReaderManager {
         
         guard let data = apduData else { return }
         guard let apdu7816 = NFCISO7816APDU(data: data) else { return }
-        nfcTag.sendCommand(apdu: apdu7816) { (data, _, _, error) in
+        nfcTag.sendCommand(apdu: apdu7816) { (data, _, code, error) in
             guard error == nil else { return }
             switch self.apdu {
             case .freezeStatus:         // 2 - get freeze status
@@ -169,9 +169,9 @@ extension ABTReaderManager {
             case .unfreezeLeftCount:
                 self.parseUnFreezeLeftCount(rawApdu: data)
             case .freeze:
-                self.parseFreeze(rawApdu: data)
+                self.parseFreeze(code: code)
             case .unfreeze:
-                self.parseFreeze(rawApdu: data)
+                self.parseFreeze(code: code)
             default: break
             }
         }
@@ -351,15 +351,17 @@ extension ABTReaderManager {
         guard let tv = getTv(rawApdu: rawApdu) else { return }
         let tag = Data(hex: TagUnFreezeLeftCount)
         guard let unfreezeCountData = tv[tag], let unfreezeCount = BTCHexFromData(unfreezeCountData) else { return }
-        unfreezeLeftCountClosure?(BigNumber(hexString: unfreezeCount.addHexPrefix())?.integerValue ?? 0)
+//        unfreezeLeftCountClosure?(BigNumber(hexString: unfreezeCount.addHexPrefix())?.integerValue ?? 0)
+        freezeResultClosure?(.wrongFreezePin, BigNumber(hexString: unfreezeCount.addHexPrefix())?.integerValue ?? 0)
     }
-    func parseFreeze(rawApdu: Data) {
-        if rawApdu.toHexString() == "9000" {
-            freezeResultClosure?(.success)
-        } else if rawApdu.toHexString() == "6982" {
-            freezeResultClosure?(.wrongFreezePin)
-        } else if rawApdu.toHexString() == "6985" {
-            freezeResultClosure?(.frozenAlready)
+    func parseFreeze(code: UInt8) {
+        if code == 0 {
+            freezeResultClosure?(.success, nil)
+        } else if code == 130 {
+//            freezeResultClosure?(.wrongFreezePin)
+            sendApdu(apdu: .unfreezeLeftCount)
+        } else if code == 133 {
+            freezeResultClosure?(.frozenAlready, nil)
         }
     }
 }

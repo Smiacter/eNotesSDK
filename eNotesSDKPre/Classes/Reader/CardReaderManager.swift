@@ -221,6 +221,7 @@ extension CardReaderManager {
                 let rawtx = BTCHexFromData(serialize).addHexPrefix()
                 
                 closure?(rawtx)
+                self.invalidNFCSession()
             }
         }
         
@@ -318,6 +319,7 @@ extension CardReaderManager {
                 }
                 
                 closure?(tx.hex)
+                self.invalidNFCSession()
             }
         }
         
@@ -332,14 +334,17 @@ extension CardReaderManager {
 
 public typealias freezeStatusClosure = ((Bool?) -> ())?
 public typealias unfreezeLeftCountClosure = ((Int) -> ())?
-public typealias freezeResultClosure = ((FreezeResult) -> ())?
+public typealias freezeResultClosure = ((FreezeResult, Int?) -> ())?
 extension CardReaderManager {
     
     public func getFreezeStatus(closure: freezeStatusClosure) {
         scanNFC(type: .frozen)
         nfcDetectClosure = { [weak self] in
             self?.abtManager.getFreezeStatus()
-            self?.abtManager.freezeStatusClosure = { closure?($0) }
+            self?.abtManager.freezeStatusClosure = {
+                self?.invalidNFCSession()
+                closure?($0)
+            }
         }
     }
     
@@ -347,7 +352,10 @@ extension CardReaderManager {
         scanNFC(type: .frozen)
         nfcDetectClosure = { [weak self] in
             self?.abtManager.getUnFreezeLeftCount()
-            self?.abtManager.unfreezeLeftCountClosure = { closure?($0) }
+            self?.abtManager.unfreezeLeftCountClosure = {
+                self?.invalidNFCSession()
+                closure?($0)
+            }
         }
     }
     
@@ -355,14 +363,20 @@ extension CardReaderManager {
         scanNFC(type: .frozen)
         nfcDetectClosure = { [weak self] in
             self?.abtManager.freeze(pinStr: pinStr)
-            self?.abtManager.freezeResultClosure = { closure?($0) }
+            self?.abtManager.freezeResultClosure = { result, count in
+                self?.invalidNFCSession()
+                closure?(result, count)
+            }
         }
     }
     public func unfreeze(pinStr: String, closure: freezeResultClosure) {
         scanNFC(type: .frozen)
         nfcDetectClosure = { [weak self] in
             self?.abtManager.unfreeze(pinStr: pinStr)
-            self?.abtManager.freezeResultClosure = { closure?($0) }
+            self?.abtManager.freezeResultClosure = {
+                self?.invalidNFCSession()
+                closure?($0, $1)
+            }
         }
     }
 }

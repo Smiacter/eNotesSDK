@@ -38,7 +38,7 @@ let DefaultGasPriceApiOrder: [ApiType] = enableEnotesApi ? [.etherchain, .infura
 /// default btc get fee api order - mainet
 let DefaultBtcFeeApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .bitcoinfees, .blockexplorer, .eNotes] : [.blockcypher, .bitcoinfees, .blockexplorer]
 let DefaultBtcFeeTestApiOrder: [ApiType] = enableEnotesApi ? [.blockcypher, .blockexplorer, .eNotes] :  [.blockcypher, .blockexplorer]
-let DefaultBtcTxsApiOrder: [ApiType] = [.blockexplorer, .blockcypher]
+let DefaultBtcTxsApiOrder: [ApiType] = [.blockcypher] // edit by kj,delete [.blockexplorer] because it can't be used
 /// common btc api array
 let BtcCommonApis: [ApiType] = enableEnotesApi ?  [.blockcypher, .blockexplorer, .eNotes] : [.blockcypher, .blockexplorer] // edit by kj , delete [.blockchain] because it return null
 /// send transaction btc api array
